@@ -1,0 +1,53 @@
+prompt:
+  role: User
+  content:
+    description: |
+      "Baseado no projeto https://github.com/dpgaspar/Flask-AppBuilder"
+      "Gerar código python, versão 3.12, para automatizar a criação de uma aplicação web em Flask, "
+      "baseado num banco de dados existente, usando o SQLAlchemy."
+      "O programa deve ser modular, utilizando a sub pasta 'modules',"
+      "cada módulo deve conter as seguintes funcionalidades:"
+        "1. Main - controlar a execução dos modulos"
+        "2. Configurar logging"
+        "3. Ler configurações do arquivo de configuração, path e file"
+        "4. Conectar ao banco de dados"
+        "5. Baseado no sqlalchemy ler a estrutura do banco de dados, com todos os seus recursos (FK, PK, tabelas, etc)"
+        "6. Gerar automaticamente JSON com a estrutura do banco de dados"
+        "7. Com o JSON, criar o models.py com as classes de acordo com a estrutura do banco de dados"
+        "8. criar views com as rotas de acordo com o JSON"
+        "9. criar forms com os campos de acordo com o JSON"
+        "10. criar controllers seguindo a logica dos relacionamentos entre tabelas do banco de dados"
+        "11. criar app.py com todos os códigos gerados acima"
+      "Usar os code patterns memorizados."
+    parameters:
+    specification:
+      - project name: "vya_crud_generator"
+      - response: "Código Python versão >= 3.12"
+      - docstyle: "Documentar o código segundo no padrão reStructuredText do Docstring, incluindo Doct test."
+      - validation: "Validar se todos os parâmetros da função/classe contem os dados esperados."
+      - error_handling: "Usar try/except em todas as funções/classes para evitar que o código sem controle. Retornar False em caso de erro."
+      - rules: |
+            "Todas as classes e funções devem registrar um log com seu nome no início e antes do encerramento."
+            "Todas as classes e funções devem ter um logging.debug com os dados recebidos e retornados."
+            "Ler o arquivo 'config.ini', na pasta do código, para coletar os dados item 'parameters'. Usar o formato: [section] key = value"
+            "Sugiro a utilização do SQLAlchemy, com acesso a Mysql e Postgres."
+            "Adicionar as bibliotecas para acesso aos bancos de dados Mysql e Postgres."
+            "Sugiro a utilização de Pydantic para validação dos dados nas inserções e alterações."
+            "O CRUD deve ter um GUI simples e leve, usando Flask atualizado."
+            "Na interface GUI usar fonte tamanho 18"
+            "usar o idioma pt-br"
+            "usar o timezone 'America/Sao_Paulo"
+    expected_outcome:
+      - return_info: "Gerar programa python."
+    profile:
+      - role: developer_python
+        skill_level: "python3 advanced skill"
+        description: "Desenvolvedor com habilidades avançadas em Python para implementação de lógica principal."
+      - role: mysql_admin
+        skill_level: "mysql database administrator advanced skill"
+        description: "Administrador Mysql para usar as melhores práticas para manuseio de dados."
+      - role: postgres_admin
+        skill_level: "Postgres database administrator advanced skill"
+        description: "Administrador Postgres para usar as melhores práticas para manuseio de dados."
+    code_snippet:
+      - code:
