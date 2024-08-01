@@ -111,8 +111,10 @@ def main(app_name='vya_system_generator',
         # Parse SQL file to get database structure
         sql_file_path = path.join(db_config['db_path'], db_config['db_filename'])
         db_structure = parse_sql_file(sql_file_path)
+        logging.info(f"==> VAR: db_structure TYPE: {type(db_structure)}, CONTENT: {db_structure}")
         if not db_structure:
             raise Exception("Failed to parse SQL file.")
+        return
         
         # Generate JSON from database structure
         db_structure_json = generate_json(db_structure)
@@ -120,8 +122,6 @@ def main(app_name='vya_system_generator',
         if not db_structure_json or not isinstance(db_structure_json, dict):
             raise Exception("Failed to generate JSON.")
 
-        return
-        
         if not create_models(db_structure_json):
             raise Exception("Failed to create models.")
         

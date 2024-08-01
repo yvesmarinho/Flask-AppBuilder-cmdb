@@ -26,11 +26,11 @@ PARÂMETROS (informar os parâmetros necessários no exemplo de utilização)
 STATUS: (status emn que se encontra o código DEV/PROD)
 DEV - pode adicionar dados adicionais para informar a fase
 """
-import logging
+# import logging
 """
  Logging configuration
 """
-
-logging.basicConfig(format="%(asctime)s - %(levelname)s - %(threadName)s - %(funcName)s:%(lineno)d - %(name)s - %(message)s")
-logging.getLogger().setLevel(logging.DEBUG)
-logging.getLogger(__name__)
+#
+# logging.basicConfig(format="%(asctime)s - %(levelname)s - %(threadName)s - %(funcName)s:%(lineno)d - %(name)s - %(message)s")
+# logging.getLogger().setLevel(logging.DEBUG)
+# logging.getLogger(__name__)
