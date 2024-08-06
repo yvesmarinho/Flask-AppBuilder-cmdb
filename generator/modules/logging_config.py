@@ -36,7 +36,7 @@ def configure_logging(config, app_name):
 
     :param config: The ConfigParser object containing the configuration.
     :type config: configparser.ConfigParser
-    :param app_name: The ConfigParser object containing the configuration.
+    :param app_name: The name of the application.
     :type app_name: str
     :return: True if logging is configured successfully, else False.
     :rtype: bool
@@ -54,7 +54,7 @@ def configure_logging(config, app_name):
         log_file = app_name + ".log"
         log_path = config.get('logging', 'log_path')
         log_level = config.get('logging', 'log_level').upper()
-        
+
         if not path.exists(log_path):
             makedirs(log_path)
 
@@ -62,24 +62,33 @@ def configure_logging(config, app_name):
 
         # Create a logger
         logger = logging.getLogger()
+
+        # Clear existing handlers
+        if logger.hasHandlers():
+            logger.handlers.clear()
+
         logger.setLevel(log_level)
-        
+
         # File handler
         file_handler = logging.FileHandler(log_full_path)
         file_handler.setLevel(log_level)
-        file_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(threadName)s - %(funcName)s:%(lineno)d - %(name)s - %(message)s")
+        file_formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s - %(threadName)s - %(funcName)s:%(lineno)d - %(name)s - %(message)s"
+        )
         file_handler.setFormatter(file_formatter)
-        
+
         # Stream handler (console output)
         stream_handler = logging.StreamHandler()
         stream_handler.setLevel(log_level)
-        stream_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(threadName)s - %(funcName)s:%(lineno)d - %(name)s - %(message)s")
+        stream_formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s - %(threadName)s - %(funcName)s:%(lineno)d - %(name)s - %(message)s"
+        )
         stream_handler.setFormatter(stream_formatter)
-        
+
         # Add handlers to the logger
         logger.addHandler(file_handler)
         logger.addHandler(stream_handler)
-        
+
         logging.debug("Logging configured successfully.")
         return True
     except Exception as errorMsg:
