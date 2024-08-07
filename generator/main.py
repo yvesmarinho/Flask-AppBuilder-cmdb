@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 -------------------------------------------------------------------------
-NOME..: sql_parser.py
+NOME..: nome_do_programa.py
 LANG..: Python3
-TITULO: Parses the SQL file to extract the database structure.
-DATA..: 31/07/2024
+TITULO: <<< DESCRIÇÃO DA FUNCIONALIDADE >>>
+DATA..: 00/00/0000
 VERSÃO: 0.1.00
 HOST..: diversos
 LOCAL.: diversos
@@ -14,7 +14,7 @@ DEPEND: (informar nas linhas abaixo os recursos necessários para utilização)
 
 -------------------------------------------------------------------------
 Copyright (c) 2022 - Vya.Digital
-This script is licensed under GNU GPL version 2.0 ou acima
+This script is licensed under GNU GPL version 2.0 or above
 -------------------------------------------------------------------------
 Modifications.....:
  Date          Rev    Author           Description
@@ -23,17 +23,45 @@ Modifications.....:
 -------------------------------------------------------------------------
 PARÂMETROS (informar os parâmetros necessários no exemplo de utilização)
 -
-STATUS: (status em que se encontra o código DEV/PROD)
+STATUS: (status emn que se encontra o código DEV/PROD)
 DEV - pode adicionar dados adicionais para informar a fase
 """
-import re
 import logging
-import sys
-import json
-from collections import defaultdict
+from os import path
+from modules.logging_config import configure_logging
+from modules.config_reader import load_config
+from modules.sql_parser import parse_sql_file
+from modules.model_creator import create_models
+# from modules.view_creator import create_views
+# from modules.form_creator import create_forms
+# from modules.controller_creator import create_controllers
+
+logging.info(f"=== Programa: {__name__} ===")
 
 
-def configure_logging():
+def display_config(config):
+    """
+    Displays the contents of the ConfigParser object.
+
+    :param config: The ConfigParser object containing the configuration.
+    :type config: configparser.ConfigParser
+    """
+    try:
+        logging.info(f"=== Função: {__name__} ===")
+        logging.info("=== Parâmetros recebidos ===")
+        logging.info(f"==> VAR: config TYPE: {type(config)}, CONTENT: {config}")
+        for section in config.sections():
+            logging.info(f"Section[{section}]")
+            for key, value in config.items(section):
+                logging.info(f"KEY:{key} = {value}")
+            logging.info("\n")
+    except Exception as errorMsg:
+        logging.error(f"Error displaying config: {errorMsg}")
+        logging.error("Exception occurred", exc_info=True)
+        return False
+
+
+def config_logging():
     if not logging.getLogger().hasHandlers():
         logging.basicConfig(
             level=logging.DEBUG,
@@ -41,331 +69,96 @@ def configure_logging():
         )
 
 
-class SQLFileReader:
-    def __init__(self, file_path):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        self.file_path = file_path
-        self.queries = []
-        self._read_file()
+def main(app_name='vya_system_generator',
+         path_config_ini=r"C:\Users\info\Documents\Projetos sysdev\Vya-Jobs\Flask-Appbuilder-cmdb\generator",
+         file_config_ini='config.ini'):
+    """
+    Main function to control the execution of modules.
 
-    def _read_file(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        with open(self.file_path, 'r', encoding='utf-8') as file:
-            sql_content = file.read()
-            self._parse_queries(sql_content)
-
-    def _parse_queries(self, sql_content):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        # Remover comentários de linha
-        lines = sql_content.splitlines()
-        cleaned_lines = []
-        in_block_comment = False
-
-        for line in lines:
-            stripped_line = line.strip()
-            if in_block_comment:
-                if "*/" in stripped_line:
-                    in_block_comment = False
-                    stripped_line = stripped_line.split("*/", 1)[1].strip()
-                else:
-                    continue
-
-            if stripped_line.startswith("/*"):
-                in_block_comment = True
-                if "*/" in stripped_line:
-                    in_block_comment = False
-                    stripped_line = stripped_line.split("*/", 1)[1].strip()
-                else:
-                    continue
-
-            if not stripped_line or stripped_line.startswith("--"):
-                continue
-
-            cleaned_lines.append(stripped_line)
-
-        cleaned_content = "\n".join(cleaned_lines)
-
-        # Processar queries
-        query = ''
-        in_string = False
-        escape_char = False
-        for char in cleaned_content:
-            if char == ';' and not in_string:
-                query += char
-                self.queries.append(query.strip())
-                query = ''
-            else:
-                query += char
-                if char == '"' or char == "'":
-                    if not escape_char:
-                        in_string = not in_string
-                escape_char = (char == '\\' and not escape_char)
-
-        if query.strip():
-            self.queries.append(query.strip())
-
-    def get_queries(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        return self.queries
-
-
-class SQLQueryAnalyzer:
-    def __init__(self, queries):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        self.queries = queries
-        self.parsed_data = []
-        self._analyze_queries()
-
-    def _analyze_queries(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        for query in self.queries:
-            query = query.strip()
-            if query.upper().startswith("CREATE TABLE"):
-                self._parse_create_query(query)
-
-    def _parse_create_query(self, query):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        table_info = {}
-        table_name_match = re.search(r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:`?(\w+)`?\.)?`?(\w+)`?", query, re.IGNORECASE)
-        if table_name_match:
-            table_info["schema"] = table_name_match.group(1) if table_name_match.group(1) else ""
-            table_info["table"] = table_name_match.group(2)
-
-        columns = []
-        primary_keys = []
-        unique_keys = []
-        foreign_keys = []
-
-        column_definitions = re.findall(r"`(\w+)`\s+([A-Z]+(?:\(\d+(?:,\d+)?\))?)(.*?)(?:,|$)", query, re.IGNORECASE)
-        for col in column_definitions:
-            column_name = col[0]
-            column_type = col[1].strip()
-            constraints_part = col[2].strip()
-            constraints = []
-            if "AUTO_INCREMENT" in constraints_part.upper():
-                constraints.append("AUTO_INCREMENT")
-            if "NOT NULL" in constraints_part.upper():
-                constraints.append("NOT NULL")
-            if "DEFAULT" in constraints_part.upper():
-                default_value = re.search(r"DEFAULT\s+([\w()'`]+)", constraints_part, re.IGNORECASE).group(1)
-                constraints.append(f"DEFAULT {default_value}")
-            if "ON UPDATE" in constraints_part.upper():
-                on_update_value = re.search(r"ON UPDATE\s+([\w()'`]+)", constraints_part, re.IGNORECASE).group(1)
-                constraints.append(f"ON UPDATE {on_update_value}")
-            columns.append({
-                "name": column_name,
-                "type": column_type,
-                "constraints": constraints
-            })
-
-        primary_key_match = re.search(r"PRIMARY KEY\s*\(([^)]+)\)", query, re.IGNORECASE)
-        if primary_key_match:
-            primary_keys = [col.strip().strip('`') for col in primary_key_match.group(1).split(',')]
-
-        unique_key_matches = re.findall(r"UNIQUE\s*(?:INDEX\s*`?\w*`?\s*)?\(([^)]+)\)", query, re.IGNORECASE)
-        for unique_key in unique_key_matches:
-            unique_keys.append([col.strip().strip('`') for col in unique_key.split(',')])
-
-        foreign_key_matches = re.findall(r"FOREIGN KEY\s*\(([^)]+)\)\s*REFERENCES\s*`?(\w+)`?\.`?(\w+)`?\s*\(([^)]+)\)",
-                                         query, re.IGNORECASE)
-        for fk in foreign_key_matches:
-            foreign_keys.append({
-                "columns": [col.strip().strip('`') for col in fk[0].split(',')],
-                "referenced_table": f"{fk[1]}.{fk[2]}",
-                "referenced_columns": [col.strip().strip('`') for col in fk[3].split(',')]
-            })
-
-        table_info["columns"] = columns
-        table_info["primary_keys"] = primary_keys
-        table_info["unique_keys"] = unique_keys
-        table_info["foreign_keys"] = foreign_keys
-
-        self.parsed_data.append(table_info)
-
-    def get_parsed_data(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        return self.parsed_data
-
-
-class TableInfoExtractor:
-    def __init__(self, create_query):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
+    :param app_name: The name of the application.
+    :type app_name: str
+    :param path_config_ini: The path to the config file.
+    :type path_config_ini: str
+    :param file_config_ini: The name of the config file.
+    :type file_config_ini: str
+    :return: True if the process completes successfully, else False.
+    :rtype: bool
+    """
+    try:
+        config_logging()
+        logging.info(f"=== Starting: {__name__} ===")
         logging.info("=== Parâmetros recebidos ===")
-        logging.info(f"==> VAR: create_query TYPE: {type(create_query)}, CONTENT: {create_query}")
-        self.create_query = create_query
-        self.database_name = ""
-        self.table_name = ""
-        self.columns = []
-        self.primary_keys = []
-        self.indexes = []
-        self.unique = []
-        self.foreign_keys = []
-        self._extract_info()
+        logging.info(f"==> VAR: app_name        TYPE: {type(app_name)}, CONTENT: {app_name}")
+        logging.info(f"==> VAR: path_config_ini TYPE: {type(path_config_ini)}, CONTENT: {path_config_ini}")
+        logging.info(f"==> VAR: file_config_ini TYPE: {type(file_config_ini)}, CONTENT: {file_config_ini}")
+        
+        if not all(isinstance(param, str) for param in [app_name, path_config_ini, file_config_ini]):
+            logging.error("Invalid parameter type. Both path and file should be strings.")
+            return False
+        
+        if not path.isfile(path.join(path_config_ini, file_config_ini)):
+            logging.error("Config.ini dont exist.")
+            return False
+        
+        logging.info("===> Carregando parâmetros do config.ini...")
+        config = load_config(path_config_ini, file_config_ini)
+        
+        if not config:
+            raise Exception("Failed to load config file.")
+        
+        display_config(config)
+        
+        if not configure_logging(config, app_name):
+            raise Exception("Failed to configure logging.")
+        
+        logging.info("===> Validando parâmetros de banco de dados...")
+        db_config = config['database_file']
+        required_keys = ["db_path", "db_filename"]
+        if not all(key in db_config for key in required_keys):
+            logging.error("Inexistent parameter in database configuration.")
+            return False
+        
+        logging.info("===> Validando existencia do database file...")
+        sql_file_path = path.join(db_config['db_path'], db_config['db_filename'])
+        if not path.isfile(sql_file_path):
+            logging.error(f"{db_config['db_filename']} dont exist.")
+            return False
+        
+        logging.info("===> Enviando SQL file para o parser...")
+        db_structure = parse_sql_file(sql_file_path)
+        if not db_structure:
+            raise Exception("Failed to parse SQL file.")
+        
+        if not db_structure or not isinstance(db_structure, list):
+            raise Exception("Failed to generate JSON.")
 
-    def _extract_info(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        self._extract_table_name()
-        self._extract_columns()
-        self._extract_primary_keys()
-        self._extract_indexes()
-        self._extract_unique_keys()
-        self._extract_foreign_keys()
+        logging.info(f"==> VAR: db_structure TYPE: {type(db_structure)}, LEN: {len(db_structure)}")
 
-    def _extract_table_name(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        create_table_pattern = r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:`?(\w+)`?\.)?`?(\w+)`?"
-        match = re.search(create_table_pattern, self.create_query, re.IGNORECASE)
-        if match:
-            self.database_name = match.group(1) if match.group(1) else ""
-            self.table_name = match.group(2)
+        logging.info("===> Enviando JSON para o gerador de modelos...")
+        projetc_folder = config['project']['project_path']
+        if not path.exists(projetc_folder):
+            raise Exception(f"{projetc_folder} folder not found.")
 
-    def _extract_columns(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        fields_section = re.search(r"\((.*)\)", self.create_query, re.DOTALL)
-        if fields_section:
-            fields = re.split(r',\s*(?![^()]*\))', fields_section.group(1))
-            for field in fields:
-                if field.upper().startswith('PRIMARY KEY'):
-                    continue
-                column_match = re.match(r"`(\w+)`\s+([A-Z]+(?:\(\d+(?:,\d+)?\))?)(.*)", field)
-                if column_match:
-                    column_name = column_match.group(1)
-                    column_type = column_match.group(2)
-                    constraints_part = column_match.group(3)
-                    constraints = []
-                    if "AUTO_INCREMENT" in constraints_part.upper():
-                        constraints.append("AUTO_INCREMENT")
-                    if "NOT NULL" in constraints_part.upper():
-                        constraints.append("NOT NULL")
-                    if "DEFAULT" in constraints_part.upper():
-                        default_value = re.search(r"DEFAULT\s+([\w()'`]+)", constraints_part, re.IGNORECASE).group(1)
-                        constraints.append(f"DEFAULT {default_value}")
-                    if "ON UPDATE" in constraints_part.upper():
-                        on_update_value = re.search(r"ON UPDATE\s+([\w()'`]+)", constraints_part, re.IGNORECASE).group(1)
-                        constraints.append(f"ON UPDATE {on_update_value}")
-                    self.columns.append({
-                        "name": column_name,
-                        "type": column_type,
-                        "constraints": constraints
-                    })
+        if not create_models(db_structure, projetc_folder):
+            raise Exception("Failed to create models.")
 
-    def _extract_primary_keys(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        primary_key_match = re.search(r"PRIMARY KEY\s*\(([^)]+)\)", self.create_query, re.IGNORECASE)
-        if primary_key_match:
-            primary_key_columns = [col.strip().strip('`') for col in primary_key_match.group(1).split(',')]
-            self.primary_keys.append({
-                "type": "INDEX",
-                "columns": primary_key_columns
-            })
+        return
 
-    def _extract_indexes(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        index_matches = re.findall(r"INDEX\s*`?(\w*)`?\s*\(([^)]+)\)", self.create_query, re.IGNORECASE)
-        for index in index_matches:
-            index_name = index[0]
-            index_columns = [col.strip().strip('`') for col in index[1].split(',')]
-            self.indexes.append({
-                "name": index_name,
-                "type": "INDEX",
-                "columns": index_columns
-            })
-
-    def _extract_unique_keys(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        unique_key_matches = re.findall(r"UNIQUE\s*INDEX\s*`?(\w*)`?\s*\(([^)]+)\)", self.create_query,
-                                        re.IGNORECASE)
-        for unique_key in unique_key_matches:
-            unique_name = unique_key[0]
-            unique_columns = [col.strip().strip('`') for col in unique_key[1].split(',')]
-            self.unique.append({
-                "name": unique_name,
-                "type": "INDEX",
-                "columns": unique_columns
-            })
-
-    def _extract_foreign_keys(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        foreign_key_matches = re.findall(
-            r"FOREIGN KEY\s*\(([^)]+)\)\s*REFERENCES\s*`?(\w+)`?\.`?(\w+)`?\s*\(([^)]+)\)\s*(ON DELETE\s+(\w+))?\s*(ON UPDATE\s+(\w+))?",
-            self.create_query, re.IGNORECASE)
-        for fk in foreign_key_matches:
-            fk_columns = [col.strip().strip('`') for col in fk[0].split(',')]
-            referenced_table = f"{fk[1]}.{fk[2]}"
-            referenced_columns = [col.strip().strip('`') for col in fk[3].split(',')]
-            on_delete = fk[5] if fk[5] else "NO ACTION"
-            on_update = fk[7] if fk[7] else "NO ACTION"
-            self.foreign_keys.append({
-                "name": f"fk_{self.table_name}_{fk_columns[0]}",
-                "column": fk_columns[0],
-                "references": {
-                    "table": referenced_table,
-                    "column": referenced_columns[0],
-                    "on_delete": on_delete,
-                    "on_update": on_update
-                }
-            })
-
-    def get_info(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        table_info = {
-            "name": self.table_name,
-            "columns": self.columns,
-            "primary key": self.primary_keys,
-            "indexes": self.indexes,
-            "unique": self.unique,
-            "foreign_keys": self.foreign_keys
-        }
-        return table_info
-
-
-def parse_sql_file(file_path: str) -> list:
-    logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-
-    databases = defaultdict(lambda: {"database": "", "tables": []})
-
-    # Ler o arquivo SQL
-    sql_reader = SQLFileReader(file_path)
-    queries = sql_reader.get_queries()
-
-    # Listar as queries
-    line_number = 0
-    for query in queries:
-        line_number += 1
-        logging.info(f"==>> LINE_NUMBER {line_number}")
-        if not "CREATE TABLE" in query.upper():
-            logging.info("Query line is not a CREATE TABLE query")
-            continue
-        logging.info(f"==> VAR: query TYPE: {type(query)}, CONTENT: {query}")
-        query_analyzer = SQLQueryAnalyzer([query])
-        query_analyzer_data = query_analyzer.get_parsed_data()
-        logging.info(f"==> VAR: query_analyzer_data TYPE: {type(query_analyzer_data)}, CONTENT: {query_analyzer_data}")
-
-        if not query_analyzer_data:
-            logging.error("Query not supported")
-            continue
-        if not isinstance(query_analyzer_data, list):
-            logging.error("query_analyzer_data is not list")
-            raise ValueError("query_analyzer_data is not list")
-
-        for query_data in query_analyzer_data:
-            extractor = TableInfoExtractor(query_data["query"])
-            logging.info(f"==> VAR: extractor TYPE: {type(extractor)}, CONTENT: {extractor}")
-            table_info = extractor.get_info()
-            logging.info(f"==> VAR: table_info TYPE: {type(table_info)}, CONTENT: {table_info}")
-
-            database_name = extractor.database_name if extractor.database_name else "default"
-            databases[database_name]["database"] = database_name
-            databases[database_name]["tables"].append(table_info)
-
-    database_list = [data for db, data in databases.items()]
-    logging.info(f"==> VAR: database_list TYPE: {type(database_list)}, CONTENT: {database_list}")
-    return database_list
+        # if not create_views(db_structure):
+        #     raise Exception("Failed to create views.")
+        #
+        # if not create_forms(db_structure):
+        #     raise Exception("Failed to create forms.")
+        #
+        # if not create_controllers(db_structure):
+        #     raise Exception("Failed to create controllers.")
+        
+        logging.debug("Main function completed successfully.")
+        return True
+    except Exception as e:
+        logging.error(f"Error in main function: {e}")
+        return False
 
 
 if __name__ == "__main__":
-    configure_logging()
-    file_path = r'C:\Users\info\Documents\Projetos sysdev\scripts\SQL\mysql\cmdb_small_lonly_20240801_1115.sql'
-    results = parse_sql_file(file_path)
-    print(json.dumps(results, indent=2))
-
+    main()

@@ -30,7 +30,8 @@ import re
 import logging
 import sys
 import json
-
+from collections import defaultdict
+from os import path
 
 def configure_logging():
     if not logging.getLogger().hasHandlers():
@@ -119,29 +120,10 @@ class SQLQueryAnalyzer:
         logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
         for query in self.queries:
             query = query.strip()
-            if query.upper().startswith("CREATE"):
+            if query.upper().startswith("CREATE TABLE"):
                 self._parse_create_query(query)
 
     def _parse_create_query(self, query):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        query_type = None
-        if re.match(r"CREATE\s+SCHEMA", query, re.IGNORECASE):
-            query_type = "SCHEMA"
-        elif re.match(r"CREATE\s+DATABASE", query, re.IGNORECASE):
-            query_type = "DATABASE"
-        elif re.match(r"CREATE\s+TABLE", query, re.IGNORECASE):
-            query_type = "TABLE"
-
-        if query_type:
-            info = {
-                "type": query_type,
-                "query": query
-            }
-            if query_type == "TABLE":
-                info.update(self._parse_create_table_query(query))
-            self.parsed_data.append(info)
-
-    def _parse_create_table_query(self, query):
         logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
         table_info = {}
         table_name_match = re.search(r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:`?(\w+)`?\.)?`?(\w+)`?", query, re.IGNORECASE)
@@ -184,13 +166,19 @@ class SQLQueryAnalyzer:
         for unique_key in unique_key_matches:
             unique_keys.append([col.strip().strip('`') for col in unique_key.split(',')])
 
-        foreign_key_matches = re.findall(r"FOREIGN KEY\s*\(([^)]+)\)\s*REFERENCES\s*`?(\w+)`?\.`?(\w+)`?\s*\(([^)]+)\)",
-                                         query, re.IGNORECASE)
+        foreign_key_matches = re.findall(
+            r"FOREIGN KEY\s*\(([^)]+)\)\s*REFERENCES\s*`?(\w+)`?\.`?(\w+)`?\s*\(([^)]+)\)\s*(ON DELETE\s+(\w+))?\s*(ON UPDATE\s+(\w+))?",
+            query, re.IGNORECASE)
         for fk in foreign_key_matches:
             foreign_keys.append({
-                "columns": [col.strip().strip('`') for col in fk[0].split(',')],
-                "referenced_table": f"{fk[1]}.{fk[2]}",
-                "referenced_columns": [col.strip().strip('`') for col in fk[3].split(',')]
+                "name": f"fk_{table_info['table']}_{fk[0].strip().strip('`')}",
+                "column": fk[0].strip().strip('`'),
+                "references": {
+                    "table": f"{fk[1]}.{fk[2]}",
+                    "column": fk[3].strip().strip('`'),
+                    "on_delete": fk[5] if fk[5] else "NO ACTION",
+                    "on_update": fk[7] if fk[7] else "NO ACTION"
+                }
             })
 
         table_info["columns"] = columns
@@ -198,7 +186,9 @@ class SQLQueryAnalyzer:
         table_info["unique_keys"] = unique_keys
         table_info["foreign_keys"] = foreign_keys
 
-        return table_info
+        table_info["query"] = query  # Adiciona a query original ao table_info
+
+        self.parsed_data.append(table_info)
 
     def get_parsed_data(self):
         logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
@@ -206,175 +196,36 @@ class SQLQueryAnalyzer:
 
 
 class TableInfoExtractor:
-    def __init__(self, create_query):
+    def __init__(self, table_info):
         logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
         logging.info("=== Parâmetros recebidos ===")
-        logging.info(f"==> VAR: create_query TYPE: {type(create_query)}, CONTENT: {create_query}")
-        self.create_query = create_query
-        self.database_name = ""
-        self.table_name = ""
-        self.columns = []
-        self.primary_keys = []
-        self.indexes = []
-        self.unique = []
-        self.foreign_keys = []
-        self.query_type = None
-        self._extract_info()
-
-    def _extract_info(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        if "CREATE TABLE" in self.create_query.upper():
-            self.query_type = "TABLE"
-            self._extract_table_name()
-            self._extract_columns()
-            self._extract_primary_keys()
-            self._extract_indexes()
-            self._extract_unique_keys()
-            self._extract_foreign_keys()
-        elif "CREATE SCHEMA" in self.create_query.upper():
-            self.query_type = "SCHEMA"
-            self._extract_schema_name()
-        elif "CREATE DATABASE" in self.create_query.upper():
-            self.query_type = "DATABASE"
-            self._extract_database_name()
-
-    def _extract_schema_name(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        schema_name_pattern = r"CREATE\s+SCHEMA\s+(?:IF\s+NOT\s+EXISTS\s+)?`?(\w+)`?"
-        match = re.search(schema_name_pattern, self.create_query, re.IGNORECASE)
-        if match:
-            self.database_name = match.group(1)
-
-    def _extract_database_name(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        database_name_pattern = r"CREATE\s+DATABASE\s+(?:IF\s+NOT\s+EXISTS\s+)?`?(\w+)`?"
-        match = re.search(database_name_pattern, self.create_query, re.IGNORECASE)
-        if match:
-            self.database_name = match.group(1)
-
-    def _extract_table_name(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        create_table_pattern = r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:`?(\w+)`?\.)?`?(\w+)`?"
-        match = re.search(create_table_pattern, self.create_query, re.IGNORECASE)
-        if match:
-            self.database_name = match.group(1) if match.group(1) else ""
-            self.table_name = match.group(2)
-
-    def _extract_columns(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        fields_section = re.search(r"\((.*)\)", self.create_query, re.DOTALL)
-        if fields_section:
-            fields = re.split(r',\s*(?![^()]*\))', fields_section.group(1))
-            for field in fields:
-                if field.upper().startswith('PRIMARY KEY'):
-                    continue
-                column_match = re.match(r"`(\w+)`\s+([A-Z]+(?:\(\d+(?:,\d+)?\))?)(.*)", field)
-                if column_match:
-                    column_name = column_match.group(1)
-                    column_type = column_match.group(2)
-                    constraints_part = column_match.group(3)
-                    constraints = []
-                    if "AUTO_INCREMENT" in constraints_part.upper():
-                        constraints.append("AUTO_INCREMENT")
-                    if "NOT NULL" in constraints_part.upper():
-                        constraints.append("NOT NULL")
-                    if "DEFAULT" in constraints_part.upper():
-                        default_value = re.search(r"DEFAULT\s+([\w()'`]+)", constraints_part, re.IGNORECASE).group(1)
-                        constraints.append(f"DEFAULT {default_value}")
-                    if "ON UPDATE" in constraints_part.upper():
-                        on_update_value = re.search(r"ON UPDATE\s+([\w()'`]+)", constraints_part, re.IGNORECASE).group(1)
-                        constraints.append(f"ON UPDATE {on_update_value}")
-                    self.columns.append({
-                        "name": column_name,
-                        "type": column_type,
-                        "constraints": constraints
-                    })
-
-    def _extract_primary_keys(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        primary_key_match = re.search(r"PRIMARY KEY\s*\(([^)]+)\)", self.create_query, re.IGNORECASE)
-        if primary_key_match:
-            primary_key_columns = [col.strip().strip('`') for col in primary_key_match.group(1).split(',')]
-            self.primary_keys.append({
-                "type": "INDEX",
-                "columns": primary_key_columns
-            })
-
-    def _extract_indexes(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        index_matches = re.findall(r"INDEX\s*`?(\w*)`?\s*\(([^)]+)\)", self.create_query, re.IGNORECASE)
-        for index in index_matches:
-            index_name = index[0]
-            index_columns = [col.strip().strip('`') for col in index[1].split(',')]
-            self.indexes.append({
-                "name": index_name,
-                "type": "INDEX",
-                "columns": index_columns
-            })
-
-    def _extract_unique_keys(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        unique_key_matches = re.findall(r"UNIQUE\s*INDEX\s*`?(\w*)`?\s*\(([^)]+)\)", self.create_query,
-                                        re.IGNORECASE)
-        for unique_key in unique_key_matches:
-            unique_name = unique_key[0]
-            unique_columns = [col.strip().strip('`') for col in unique_key[1].split(',')]
-            self.unique.append({
-                "name": unique_name,
-                "type": "INDEX",
-                "columns": unique_columns
-            })
-
-    def _extract_foreign_keys(self):
-        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        foreign_key_matches = re.findall(
-            r"FOREIGN KEY\s*\(([^)]+)\)\s*REFERENCES\s*`?(\w+)`?\.`?(\w+)`?\s*\(([^)]+)\)\s*(ON DELETE\s+(\w+))?\s*(ON UPDATE\s+(\w+))?",
-            self.create_query, re.IGNORECASE)
-        for fk in foreign_key_matches:
-            fk_columns = [col.strip().strip('`') for col in fk[0].split(',')]
-            referenced_table = f"{fk[1]}.{fk[2]}"
-            referenced_columns = [col.strip().strip('`') for col in fk[3].split(',')]
-            on_delete = fk[5] if fk[5] else "NO ACTION"
-            on_update = fk[7] if fk[7] else "NO ACTION"
-            self.foreign_keys.append({
-                "name": f"fk_{self.table_name}_{fk_columns[0]}",
-                "column": fk_columns[0],
-                "references": {
-                    "table": referenced_table,
-                    "column": referenced_columns[0],
-                    "on_delete": on_delete,
-                    "on_update": on_update
-                }
-            })
+        logging.info(f"==> VAR: table_info TYPE: {type(table_info)}, CONTENT: {table_info}")
+        self.table_info = table_info
+        self.database_name = table_info.get("schema", "")
+        self.table_name = table_info.get("table", "")
+        self.columns = table_info.get("columns", [])
+        self.primary_keys = table_info.get("primary_keys", [])
+        self.indexes = table_info.get("indexes", [])
+        self.unique = table_info.get("unique_keys", [])
+        self.foreign_keys = table_info.get("foreign_keys", [])
 
     def get_info(self):
         logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        if self.query_type == "TABLE":
-            info = {
-                "database": self.database_name,
-                "tables": [
-                    {
-                        "name": self.table_name,
-                        "columns": self.columns,
-                        "primary key": self.primary_keys,
-                        "indexes": self.indexes,
-                        "unique": self.unique,
-                        "foreign_keys": self.foreign_keys
-                    }
-                ]
-            }
-        else:
-            info = {
-                "database": self.database_name,
-                "type": self.query_type
-            }
-        return json.dumps(info)
+        table_info = {
+            "name": self.table_name,
+            "columns": self.columns,
+            "primary key": [{"type": "INDEX", "columns": self.primary_keys}],
+            "indexes": [{"name": "", "type": "INDEX", "columns": idx} for idx in self.indexes],
+            "unique": [{"name": "", "type": "INDEX", "columns": uniq} for uniq in self.unique],
+            "foreign_keys": self.foreign_keys
+        }
+        return table_info
 
 
 def parse_sql_file(file_path: str) -> list:
     logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
 
-    parse_sql_results: list = []
+    databases = defaultdict(lambda: {"database": "", "tables": []})
 
     # Ler o arquivo SQL
     sql_reader = SQLFileReader(file_path)
@@ -385,8 +236,8 @@ def parse_sql_file(file_path: str) -> list:
     for query in queries:
         line_number += 1
         logging.info(f"==>> LINE_NUMBER {line_number}")
-        if not any(keyword in query.upper() for keyword in ["CREATE TABLE", "CREATE SCHEMA", "CREATE DATABASE"]):
-            logging.info("Query line is not a CREATE TABLE, CREATE SCHEMA, or CREATE DATABASE query")
+        if not "CREATE TABLE" in query.upper():
+            logging.info("Query line is not a CREATE TABLE query")
             continue
         logging.info(f"==> VAR: query TYPE: {type(query)}, CONTENT: {query}")
         query_analyzer = SQLQueryAnalyzer([query])
@@ -400,20 +251,28 @@ def parse_sql_file(file_path: str) -> list:
             logging.error("query_analyzer_data is not list")
             raise ValueError("query_analyzer_data is not list")
 
-        for query_data in query_analyzer_data:
-            extractor = TableInfoExtractor(query_data["query"])
+        for table_info in query_analyzer_data:
+            extractor = TableInfoExtractor(table_info)
             logging.info(f"==> VAR: extractor TYPE: {type(extractor)}, CONTENT: {extractor}")
-            table_info = extractor.get_info()
-            logging.info(f"==> VAR: table_info TYPE: {type(table_info)}, CONTENT: {table_info}")
+            table_info_extracted = extractor.get_info()
+            logging.info(f"==> VAR: table_info_extracted TYPE: {type(table_info_extracted)}, CONTENT: {table_info_extracted}")
 
-            parse_sql_results.append(json.loads(table_info))
+            database_name = extractor.database_name if extractor.database_name else "default"
+            databases[database_name]["database"] = database_name
+            databases[database_name]["tables"].append(table_info_extracted)
 
-    logging.info(f"==> VAR: parse_sql_results TYPE: {type(parse_sql_results)}, LEN: {len(parse_sql_results)}")
-    return parse_sql_results
+    database_list = [data for db, data in databases.items()]
+    logging.info(f"==> VAR: database_list TYPE: {type(database_list)}, CONTENT: {database_list}")
+    return database_list
 
 
 if __name__ == "__main__":
     configure_logging()
     file_path = r'C:\Users\info\Documents\Projetos sysdev\scripts\SQL\mysql\cmdb_small_lonly_20240801_1115.sql'
     results = parse_sql_file(file_path)
-    print(json.dumps(results, indent=2))
+    json_file_name = "db_structure.json"
+    json_file_path = r"C:\Users\info\Documents\Projetos sysdev\Vya-Jobs\Flask-AppBuilder-cmdb\generator"
+    json_file_path_name = path.join(json_file_path, json_file_name)
+    
+    with open(json_file_path_name, 'w') as json_file:
+        json.dump(results, json_file, indent=2)

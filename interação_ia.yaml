@@ -4,22 +4,14 @@ prompt:
     description: |
       "Baseado no projeto https://github.com/dpgaspar/Flask-AppBuilder"
       "Gerar código python, versão 3.12, para automatizar a criação de uma aplicação web em Flask, "
-      "baseado num banco de dados existente, usando o SQLAlchemy."
-      "O programa deve ser modular, utilizando a sub pasta 'modules',"
-      "cada módulo deve conter as seguintes funcionalidades:"
-        "1. Main - controlar a execução dos modulos"
-        "2. Configurar logging"
-        "3. Ler configurações do arquivo de configuração, path e file"
-        "4. Conectar ao banco de dados"
-        "5. Baseado no sqlalchemy ler a estrutura do banco de dados, com todos os seus recursos (FK, PK, tabelas, etc)"
-        "6. Gerar automaticamente JSON com a estrutura do banco de dados"
-        "7. Com o JSON, criar o models.py com as classes de acordo com a estrutura do banco de dados"
-        "8. criar views com as rotas de acordo com o JSON"
-        "9. criar forms com os campos de acordo com o JSON"
-        "10. criar controllers seguindo a logica dos relacionamentos entre tabelas do banco de dados"
-        "11. criar app.py com todos os códigos gerados acima"
+      "baseado num arquivo SQL com a estrutura de tabelas, padrão MySQL Workbench."
+      "O programa deve ser modular, utilizando a sub pasta 'modules', "
+      "Já existem os códigos main.py, sql_parser.py e model_creator.py, agora"
+      "gerar o módulo para criar views.py de acordo com o JSON da estrutura do banco de dados"
       "Usar os code patterns memorizados."
     parameters:
+        - db_structure: "JSON com a estrutura do banco de dados."
+        - projetc_folder: "Diretório onde o código será gerado."
     specification:
       - project name: "vya_crud_generator"
       - response: "Código Python versão >= 3.12"
@@ -51,3 +43,136 @@ prompt:
         description: "Administrador Postgres para usar as melhores práticas para manuseio de dados."
     code_snippet:
       - code:
+          "Modelo do JSON gerado pelo parse_sql"
+          ```JSOn
+            [
+            {
+            "database": "cmdb",
+            "tables": [
+              {
+                "name": "app_type",
+                "columns": [
+                  {
+                    "name": "id_app_type",
+                    "type": "INT",
+                    "constraints": [
+                      "AUTO_INCREMENT",
+                      "NOT NULL"
+                    ]
+                  },
+                  {
+                    "name": "description",
+                    "type": "VARCHAR(255)",
+                    "constraints": [
+                      "NOT NULL"
+                    ]
+                  },
+                  {
+                    "name": "createdAt",
+                    "type": "DATETIME",
+                    "constraints": [
+                      "NOT NULL",
+                      "DEFAULT CURRENT_TIMESTAMP"
+                    ]
+                  },
+                  {
+                    "name": "updatedAt",
+                    "type": "DATETIME",
+                    "constraints": [
+                      "DEFAULT NULL",
+                      "ON UPDATE CURRENT_TIMESTAMP"
+                    ]
+                  }
+                ],
+                "primary key": [
+                  {
+                    "type": "INDEX",
+                    "columns": [
+                      "id_app_type"
+                    ]
+                  }
+                ],
+                "indexes": [ ],
+                "unique": [ ],
+                "foreign_keys": [ ]
+              },
+              {
+                "name": "application",
+                "columns": [
+                  {
+                    "name": "id_application",
+                    "type": "INT",
+                    "constraints": [
+                      "AUTO_INCREMENT",
+                      "NOT NULL"
+                    ]
+                  },
+                  {
+                    "name": "name",
+                    "type": "VARCHAR(255)",
+                    "constraints": [
+                      "NOT NULL"
+                    ]
+                  },
+                  {
+                    "name": "version",
+                    "type": "VARCHAR(50)",
+                    "constraints": [
+                      "DEFAULT NULL"
+                    ]
+                  },
+                  {
+                    "name": "id_app_type",
+                    "type": "INT",
+                    "constraints": [
+                      "NOT NULL"
+                    ]
+                  },
+                  {
+                    "name": "createdAt",
+                    "type": "DATETIME",
+                    "constraints": [
+                      "DEFAULT CURRENT_TIMESTAMP"
+                    ]
+                  },
+                  {
+                    "name": "updatedAt",
+                    "type": "DATETIME",
+                    "constraints": [
+                      "DEFAULT NULL",
+                      "ON UPDATE CURRENT_TIMESTAMP"
+                    ]
+                  },
+                  {
+                    "name": "id_app_type",
+                    "type": "ASC",
+                    "constraints": [ ]
+                  }
+                ],
+                "primary key": [
+                  {
+                    "type": "INDEX",
+                    "columns": [
+                      "id_application"
+                    ]
+                  }
+                ],
+                "indexes": [ ],
+                "unique": [ ],
+                "foreign_keys": [
+                  {
+                    "name": "fk_application_id_app_type",
+                    "column": "id_app_type",
+                    "references": {
+                      "table": "cmdb.app_type",
+                      "column": "id_app_type",
+                      "on_delete": "NO ACTION",
+                      "on_update": "NO ACTION"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          ]
+          ```

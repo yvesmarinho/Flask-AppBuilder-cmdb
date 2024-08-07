@@ -29,8 +29,15 @@ DEV - pode adicionar dados adicionais para informar a fase
 """
 import json
 import logging
-from os import getcwd, path, remove, mkdir
+import sys
+from os import getcwd, path, remove
 
+def configure_logging():
+    if not logging.getLogger().hasHandlers():
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)s - %(levelname)s - %(threadName)s - %(funcName)s:%(lineno)d - %(name)s - %(message)s"
+        )
 
 class ModelGenerator:
     def __init__(self, json_input):
@@ -47,7 +54,7 @@ class ModelGenerator:
         models_code.append("import datetime")
         models_code.append("from flask_appbuilder import Model")
         models_code.append(
-            "from sqlalchemy import Column, DateTime, Date, ForeignKey, Integer, String, Table, Text, PrimaryKeyConstraint, UniqueConstraint, Index, Float")
+                "from sqlalchemy import Column, DateTime, Date, ForeignKey, Integer, String, Table, Text, PrimaryKeyConstraint, UniqueConstraint, Index, Float")
         models_code.append("from sqlalchemy.orm import relationship")
         models_code.append("")
         
@@ -65,7 +72,7 @@ class ModelGenerator:
             for table in tables:
                 table_name = table['name']
                 columns = table['columns']
-                primary_key = table.get('primary key', [])
+                primary_key = table.get('primary_key', [])
                 indexes = table.get('indexes', [])
                 unique_indexes = table.get('unique', [])
                 foreign_keys = table.get('foreign_keys', [])
@@ -90,7 +97,7 @@ class ModelGenerator:
                     models_code.append(f"    {column_name} = Column({column_type}{constraints})")
                 
                 if primary_key:
-                    pk_columns = ', '.join([f"'{col}'" for col in primary_key[0]['columns']])
+                    pk_columns = ', '.join([f"'{col}'" for col in primary_key])
                     models_code.append(f"    __table_args__ = (PrimaryKeyConstraint({pk_columns}),)")
                 
                 for index in indexes:
@@ -144,6 +151,12 @@ class ModelGenerator:
 
 
 def create_models(db_structure: list, project_folder: str) -> bool:
+    configure_logging()
+    logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
+    logging.info("=== Parâmetros recebidos ===")
+    logging.info(f"==> VAR: db_structure    TYPE: {type(db_structure)}, CONTENT: {db_structure}")
+    logging.info(f"==> VAR: project_folder  TYPE: {type(project_folder)}, CONTENT: {project_folder}")
+    
     if len(project_folder) == 0:
         project_folder = getcwd()
     
@@ -151,119 +164,41 @@ def create_models(db_structure: list, project_folder: str) -> bool:
         print("Database structure is empty")
         return False
     
+    logging.info("===> Verifica se o arquivo models existe...")
     models_path_file = path.join(project_folder, "models.py")
     if path.exists(models_path_file):
         remove(models_path_file)
         logging.warning(f"File {models_path_file} already exists and will be overwritten")
-    
-    if not path.exists(project_folder):
-        mkdir(project_folder)
-    
-    # Create the header with imports only once
+
+    logging.info("===> Create models.py header with imports only once...")
     generator = ModelGenerator(db_structure[0])
     header_code = generator.generate_models().split('\n', 5)[:5]
     header_code = '\n'.join(header_code) + '\n\n'
-    
+
+    logging.info("===> Append models.pys with data...")
     with open(models_path_file, "w") as f:
         f.write(header_code)
-    
-    # Generate models for each database
-    for db_data in db_structure:
-        logging.info(f"==> VAR: db_data   TYPE: {type(db_data)}, CONTENT: {db_data}")
-        generator = ModelGenerator(db_data)
-        models_code = generator.generate_models().split('\n', 5)[5:]
-        models_code = '\n'.join(models_code)
-        with open(models_path_file, "a") as f:
+        for db_data in db_structure:
+            logging.info(f"==> VAR: db_data   TYPE: {type(db_data)}, CONTENT: {db_data}")
+            generator = ModelGenerator(db_data)
+            models_code = generator.generate_models().split('\n', 5)[5:]
+            models_code = '\n'.join(models_code)
             f.write(models_code)
-    
+
+    logging.info("===> End of Module...")
+
     return True
 
 
 if __name__ == '__main__':
     # Example usage
-    json_input = """
-    [
-      {
-        "database": "your_database_name",
-        "tables": [
-          {
-            "name": "profiles",
-            "columns": [
-              {
-                "name": "id",
-                "type": "INT",
-                "constraints": [
-                  "PRIMARY KEY",
-                  "AUTO_INCREMENT"
-                ]
-              },
-              {
-                "name": "user_id",
-                "type": "INT",
-                "constraints": [
-                  "NOT NULL"
-                ]
-              },
-              {
-                "name": "first_name",
-                "type": "VARCHAR(50)",
-                "constraints": [
-                  "NOT NULL"
-                ]
-              },
-              {
-                "name": "last_name",
-                "type": "VARCHAR(50)",
-                "constraints": []
-              },
-              {
-                "name": "birthdate",
-                "type": "DATE",
-                "constraints": []
-              },
-              {
-                "name": "bio",
-                "type": "TEXT",
-                "constraints": []
-              }
-            ],
-            "primary key": [
-              {
-                "type": "INDEX",
-                "columns": ["user_id"]
-              }
-            ],
-            "indexes": [
-              {
-                "name": "idx_user_first_last_name",
-                "type": "INDEX",
-                "columns": ["first_name", "last_name"]
-              }
-            ],
-            "unique": [
-              {
-                "name": "idx_user_id",
-                "type": "INDEX",
-                "columns": ["user_id"]
-              }
-            ],
-            "foreign_keys": [
-              {
-                "name": "fk_profiles_user_id",
-                "column": "user_id",
-                "references": {
-                  "table": "users",
-                  "column": "id",
-                  "on_delete": "CASCADE",
-                  "on_update": "CASCADE"
-                }
-              }
-            ]
-          }
-        ]
-      }
-    ]
-    """
-    generator = ModelGenerator(json_input)
+    json_file_name = "db_structure.json"
+    json_file_path = r"C:\Users\info\Documents\Projetos sysdev\Vya-Jobs\Flask-AppBuilder-cmdb\generator"
+    json_file_path_name = path.join(json_file_path, json_file_name)
+    
+    with open(json_file_path_name) as json_file:
+        json_data = json.load(json_file)
+    
+    generator = ModelGenerator(json_data)
     models_code = generator.generate_models()
-    print(models_code)
+    # print(models_code)

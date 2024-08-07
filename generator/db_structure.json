@@ -1,1 +1,2090 @@
-[{"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "description", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_app_type"]}], "indexes": [], "unique": [], "foreign_keys": []}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "name", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "version", "type": "VARCHAR(50)", "constraints": ["DEFAULT NULL"]}, {"name": "id_app_type", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_application"]}], "indexes": [{"name": "aplicacoes_ibfk_1", "type": "INDEX", "columns": ["id_app_type` ASC"]}], "unique": [], "foreign_keys": [{"name": "fk_cmdb_id_app_type", "column": "id_app_type", "references": {"table": "cmdb.app_type", "column": "id_app_type", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "customers_name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"]}, {"name": "id_organization", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "id_site", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL"]}], "primary key": [{"type": "INDEX", "columns": ["id_customers"]}], "indexes": [{"name": "", "type": "INDEX", "columns": ["customers_name` ASC"]}, {"name": "fk_customers_site", "type": "INDEX", "columns": ["id_site` ASC"]}, {"name": "fk_customers_organization_idx", "type": "INDEX", "columns": ["id_organization` ASC"]}], "unique": [{"name": "", "type": "INDEX", "columns": ["customers_name` ASC"]}], "foreign_keys": [{"name": "fk_cmdb_id_organization", "column": "id_organization", "references": {"table": "cmdb.organization", "column": "id_organization", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}, {"name": "fk_cmdb_id_site", "column": "id_site", "references": {"table": "location.sites", "column": "id_sites", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "id_dns", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "id_application", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "app_port", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "server_ip_type", "type": "ENUM(", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_device", "id_dns", "id_application"]}], "indexes": [{"name": "idx_id_dns", "type": "INDEX", "columns": ["id_dns` ASC"]}, {"name": "idx_id_device", "type": "INDEX", "columns": ["id_device` ASC"]}, {"name": "idx_id_application", "type": "INDEX", "columns": ["id_application` ASC"]}], "unique": [], "foreign_keys": [{"name": "fk_cmdb_id_application", "column": "id_application", "references": {"table": "cmdb.application", "column": "id_application", "on_delete": "NO", "on_update": "NO ACTION"}}, {"name": "fk_cmdb_id_dns", "column": "id_dns", "references": {"table": "cmdb.dns_a_register", "column": "id_dns_a_register", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}, {"name": "fk_cmdb_id_device", "column": "id_device", "references": {"table": "cmdb.devices", "column": "id_devices", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "description", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_device_type"]}], "indexes": [], "unique": [], "foreign_keys": []}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "id_device_type", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "device_name", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "id_operational_system", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "id_provider", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_devices", "id_operational_system"]}], "indexes": [{"name": "device_deviceType_ibfk_1", "type": "INDEX", "columns": ["id_device_type` ASC"]}, {"name": "operationalSystem_ibfk_2", "type": "INDEX", "columns": ["id_operational_system` ASC"]}, {"name": "provider_ibfk_idx", "type": "INDEX", "columns": ["id_provider` ASC"]}], "unique": [], "foreign_keys": [{"name": "fk_cmdb_id_device_type", "column": "id_device_type", "references": {"table": "cmdb.device_type", "column": "id_device_type", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}, {"name": "fk_cmdb_id_operational_system", "column": "id_operational_system", "references": {"table": "cmdb.operationalsystem_type", "column": "id_operationalsystem_type", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}, {"name": "fk_cmdb_id_provider", "column": "id_provider", "references": {"table": "cmdb.provider", "column": "id_provider", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "name", "type": "VARCHAR(256)", "constraints": ["NOT NULL"]}, {"name": "comment", "type": "TEXT", "constraints": ["DEFAULT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_dns_a_register"]}], "indexes": [], "unique": [], "foreign_keys": []}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "id_network_interface", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "ip_address_name", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "ip_address_type", "type": "ENUM(", "constraints": ["NOT NULL"]}, {"name": "ip_address_version", "type": "ENUM(", "constraints": ["NOT NULL"]}, {"name": "ip_address", "type": "VARCHAR(50)", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_ip_address"]}], "indexes": [{"name": "idx_ip_address_version_type_network_interface", "type": "INDEX", "columns": ["id_network_interface` ASC", "ip_address_type` ASC", "ip_address_version` ASC", "ip_address` ASC"]}], "unique": [{"name": "idx_ip_address_version_type_network_interface", "type": "INDEX", "columns": ["id_network_interface` ASC", "ip_address_type` ASC", "ip_address_version` ASC", "ip_address` ASC"]}], "foreign_keys": [{"name": "fk_cmdb_id_network_interface", "column": "id_network_interface", "references": {"table": "cmdb.network_interface", "column": "id_network_interface", "on_delete": "CASCADE", "on_update": "CASCADE"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "network_interface_name", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "id_devices", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_network_interface"]}], "indexes": [{"name": "", "type": "INDEX", "columns": ["network_interface_name` ASC"]}, {"name": "idx_network_interface_name", "type": "INDEX", "columns": ["network_interface_name` ASC", "id_devices` ASC"]}, {"name": "networkInterface_devices_ibfk_idx", "type": "INDEX", "columns": ["id_devices` ASC"]}], "unique": [{"name": "", "type": "INDEX", "columns": ["network_interface_name` ASC"]}, {"name": "idx_network_interface_name", "type": "INDEX", "columns": ["network_interface_name` ASC", "id_devices` ASC"]}], "foreign_keys": [{"name": "fk_cmdb_id_devices", "column": "id_devices", "references": {"table": "cmdb.devices", "column": "id_devices", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "description", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_operationalsystem_type"]}], "indexes": [], "unique": [], "foreign_keys": []}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "organization_name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"]}, {"name": "id_site", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL"]}], "primary key": [{"type": "INDEX", "columns": ["id_organization"]}], "indexes": [{"name": "", "type": "INDEX", "columns": ["organization_name` ASC"]}, {"name": "fk_organization_site", "type": "INDEX", "columns": ["id_site` ASC"]}], "unique": [{"name": "", "type": "INDEX", "columns": ["organization_name` ASC"]}], "foreign_keys": [{"name": "fk_cmdb_id_site", "column": "id_site", "references": {"table": "location.sites", "column": "id_sites", "on_delete": "CASCADE", "on_update": "CASCADE"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "provider_name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"]}, {"name": "id_site", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL"]}], "primary key": [{"type": "INDEX", "columns": ["id_provider"]}], "indexes": [{"name": "", "type": "INDEX", "columns": ["provider_name` ASC"]}, {"name": "fk_provider_site", "type": "INDEX", "columns": ["id_site` ASC"]}], "unique": [{"name": "", "type": "INDEX", "columns": ["provider_name` ASC"]}], "foreign_keys": [{"name": "fk_cmdb_id_site", "column": "id_site", "references": {"table": "location.sites", "column": "id_sites", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "services_name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"]}, {"name": "id_customers", "type": "INT(11)", "constraints": ["DEFAULT NULL"]}, {"name": "id_application", "type": "INT(11)", "constraints": ["DEFAULT NULL"]}, {"name": "services_custom_data", "type": "JSON", "constraints": ["DEFAULT NULL"]}, {"name": "services_data", "type": "JSON", "constraints": ["DEFAULT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_services"]}], "indexes": [{"name": "idx_customersId_applicationId", "type": "INDEX", "columns": ["services_name` ASC", "id_customers` ASC", "id_application` ASC"]}, {"name": "fk_services_applicationId", "type": "INDEX", "columns": ["id_application` ASC"]}, {"name": "fk_services_customersId_idx", "type": "INDEX", "columns": ["id_customers` ASC"]}], "unique": [{"name": "idx_customersId_applicationId", "type": "INDEX", "columns": ["services_name` ASC", "id_customers` ASC", "id_application` ASC"]}], "foreign_keys": [{"name": "fk_cmdb_id_customers", "column": "id_customers", "references": {"table": "cmdb.customers", "column": "id_customers", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}, {"name": "fk_cmdb_id_application", "column": "id_application", "references": {"table": "cmdb.application", "column": "id_application", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "name", "type": "VARCHAR(45)", "constraints": ["NOT NULL"]}, {"name": "description", "type": "VARCHAR(200)", "constraints": ["NOT NULL"]}, {"name": "action", "type": "TEXT", "constraints": ["NOT NULL"]}, {"name": "test_data", "type": "TEXT", "constraints": ["DEFAULT NULL"]}, {"name": "cron_data", "type": "TEXT", "constraints": ["DEFAULT NULL"]}, {"name": "test_wait_time", "type": "INT(5)", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_test"]}], "indexes": [], "unique": [], "foreign_keys": []}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "id_test_title", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "id_server", "type": "INT(11)", "constraints": ["DEFAULT NULL"]}, {"name": "id_application", "type": "INT(11)", "constraints": ["DEFAULT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_test_app_server"]}], "indexes": [{"name": "test_title_id_idx", "type": "INDEX", "columns": ["id_test_title` ASC"]}, {"name": "server_id_idx", "type": "INDEX", "columns": ["id_server` ASC"]}, {"name": "app_id_idx", "type": "INDEX", "columns": ["id_application` ASC"]}, {"name": "un_test", "type": "INDEX", "columns": ["id_test_title` ASC", "id_server` ASC", "id_application` ASC"]}], "unique": [{"name": "un_test", "type": "INDEX", "columns": ["id_test_title` ASC", "id_server` ASC", "id_application` ASC"]}], "foreign_keys": [{"name": "fk_cmdb_id_test_title", "column": "id_test_title", "references": {"table": "cmdb.test_title", "column": "id_test_title", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}, {"name": "fk_cmdb_id_server", "column": "id_server", "references": {"table": "cmdb.devices", "column": "id_devices", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}, {"name": "fk_cmdb_id_application", "column": "id_application", "references": {"table": "cmdb.application", "column": "id_application", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "id_test", "type": "INT(11)", "constraints": ["NOT NULL"]}, {"name": "last_execution_time", "type": "DATETIME", "constraints": ["DEFAULT NULL"]}, {"name": "nbr_execution_times", "type": "INT", "constraints": ["DEFAULT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_test_execution_control"]}], "indexes": [{"name": "test_id_idx", "type": "INDEX", "columns": ["id_test` ASC"]}], "unique": [], "foreign_keys": [{"name": "fk_cmdb_id_test", "column": "id_test", "references": {"table": "cmdb.test", "column": "id_test", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "id_test_status", "type": "INT(11)", "constraints": ["NOT NULL"]}, {"name": "id_test", "type": "INT(11)", "constraints": ["NOT NULL"]}, {"name": "test_app", "type": "INT(11)", "constraints": ["NOT NULL"]}, {"name": "test_server", "type": "INT(11)", "constraints": ["NOT NULL"]}, {"name": "startedAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "finishedAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "duration", "type": "DECIMAL(8", "constraints": ["NOT NULL"]}, {"name": "code", "type": "INT(11)", "constraints": ["NOT NULL"]}, {"name": "result", "type": "TEXT(255)", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_test_result"]}], "indexes": [], "unique": [], "foreign_keys": [{"name": "fk_cmdb_id_test_status", "column": "id_test_status", "references": {"table": "cmdb.test_status", "column": "id_test_status", "on_delete": "NO", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "name", "type": "VARCHAR(30)", "constraints": ["NOT NULL"]}, {"name": "order_show", "type": "INT(11)", "constraints": ["DEFAULT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_test_status"]}], "indexes": [{"name": "un_state_name", "type": "INDEX", "columns": ["name` ASC"]}], "unique": [{"name": "un_state_name", "type": "INDEX", "columns": ["name` ASC"]}], "foreign_keys": []}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "description", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_test_title"]}], "indexes": [], "unique": [], "foreign_keys": []}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "cmdb", "columns": [{"name": "name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"]}, {"name": "description", "type": "VARCHAR(200)", "constraints": ["DEFAULT NULL"]}, {"name": "id_test_title", "type": "INT(11)", "constraints": ["NOT NULL"]}, {"name": "execution_order", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "id_test", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "test_order", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_test_topic"]}], "indexes": [{"name": "fk_test_title", "type": "INDEX", "columns": ["id_test_title` ASC"]}, {"name": "fk_test", "type": "INDEX", "columns": ["id_test` ASC"]}, {"name": "order_execution_test", "type": "INDEX", "columns": ["execution_order` ASC", "test_order` ASC"]}], "unique": [{"name": "order_execution_test", "type": "INDEX", "columns": ["execution_order` ASC", "test_order` ASC"]}], "foreign_keys": [{"name": "fk_cmdb_id_test_title", "column": "id_test_title", "references": {"table": "cmdb.test_title", "column": "id_test_title", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}, {"name": "fk_cmdb_id_test", "column": "id_test", "references": {"table": "cmdb.test", "column": "id_test", "on_delete": "NO ACTION", "on_update": "NO ACTION"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "location", "columns": [{"name": "city_name", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "id_states", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_cities"]}], "indexes": [{"name": "idx_city_name", "type": "INDEX", "columns": ["city_name` ASC", "id_states` ASC"]}, {"name": "fk_id_states", "type": "INDEX", "columns": ["id_states` ASC"]}], "unique": [{"name": "idx_city_name", "type": "INDEX", "columns": ["city_name` ASC", "id_states` ASC"]}], "foreign_keys": [{"name": "fk_location_id_states", "column": "id_states", "references": {"table": "location.states", "column": "id_states", "on_delete": "CASCADE", "on_update": "CASCADE"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "location", "columns": [{"name": "country_name", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "country_abbreviation", "type": "VARCHAR(5)", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_country"]}], "indexes": [{"name": "", "type": "INDEX", "columns": ["country_name` ASC"]}, {"name": "idx_country_name", "type": "INDEX", "columns": ["country_name` ASC"]}], "unique": [{"name": "", "type": "INDEX", "columns": ["country_name` ASC"]}, {"name": "idx_country_name", "type": "INDEX", "columns": ["country_name` ASC"]}], "foreign_keys": []}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "location", "columns": [{"name": "site_name", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "id_cities", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_sites"]}], "indexes": [{"name": "fk_id_cities", "type": "INDEX", "columns": ["id_cities` ASC"]}], "unique": [], "foreign_keys": [{"name": "fk_location_id_cities", "column": "id_cities", "references": {"table": "location.cities", "column": "id_cities", "on_delete": "CASCADE", "on_update": "CASCADE"}}]}]}, {"database": "IF NOT EXISTS ", "tables": [{"name": "location", "columns": [{"name": "state_name", "type": "VARCHAR(255)", "constraints": ["NOT NULL"]}, {"name": "state_abbreviation", "type": "VARCHAR(5)", "constraints": ["NOT NULL"]}, {"name": "id_country", "type": "INT", "constraints": ["NOT NULL"]}, {"name": "createdAt", "type": "DATETIME", "constraints": ["NOT NULL", "DEFAULT CURRENT_TIMESTAMP"]}, {"name": "updatedAt", "type": "DATETIME", "constraints": ["DEFAULT NULL", "ON UPDATE CURRENT_TIMESTAMP"]}], "primary key": [{"type": "INDEX", "columns": ["id_states"]}], "indexes": [{"name": "idx_state_name", "type": "INDEX", "columns": ["state_name` ASC", "id_country` ASC"]}, {"name": "fk_id_country", "type": "INDEX", "columns": ["id_country` ASC"]}], "unique": [{"name": "idx_state_name", "type": "INDEX", "columns": ["state_name` ASC", "id_country` ASC"]}], "foreign_keys": [{"name": "fk_location_id_country", "column": "id_country", "references": {"table": "location.country", "column": "id_country", "on_delete": "CASCADE", "on_update": "CASCADE"}}]}]}]
+[
+  {
+    "database": "cmdb",
+    "tables": [
+      {
+        "name": "app_type",
+        "columns": [
+          {
+            "name": "id_app_type",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "description",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_app_type"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": []
+      },
+      {
+        "name": "application",
+        "columns": [
+          {
+            "name": "id_application",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "version",
+            "type": "VARCHAR(50)",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "id_app_type",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "id_app_type",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_application"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": [
+          {
+            "name": "fk_application_id_app_type",
+            "column": "id_app_type",
+            "references": {
+              "table": "cmdb.app_type",
+              "column": "id_app_type",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "customers",
+        "columns": [
+          {
+            "name": "id_customers",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "customers_name",
+            "type": "VARCHAR(100)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_organization",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_site",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "customers_name",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_site",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_organization",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_customers"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "customers_name` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_customers_id_organization",
+            "column": "id_organization",
+            "references": {
+              "table": "cmdb.organization",
+              "column": "id_organization",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          },
+          {
+            "name": "fk_customers_id_site",
+            "column": "id_site",
+            "references": {
+              "table": "location.sites",
+              "column": "id_sites",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "device_app_dns",
+        "columns": [
+          {
+            "name": "id_device",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_dns",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_application",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "app_port",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "server_ip_type",
+            "type": "ENUM",
+            "constraints": []
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "id_dns",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_device",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_application",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_device",
+              "id_dns",
+              "id_application"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": [
+          {
+            "name": "fk_device_app_dns_id_application",
+            "column": "id_application",
+            "references": {
+              "table": "cmdb.application",
+              "column": "id_application",
+              "on_delete": "NO",
+              "on_update": "NO ACTION"
+            }
+          },
+          {
+            "name": "fk_device_app_dns_id_dns",
+            "column": "id_dns",
+            "references": {
+              "table": "cmdb.dns_a_register",
+              "column": "id_dns_a_register",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          },
+          {
+            "name": "fk_device_app_dns_id_device",
+            "column": "id_device",
+            "references": {
+              "table": "cmdb.devices",
+              "column": "id_devices",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "device_type",
+        "columns": [
+          {
+            "name": "id_device_type",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "description",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_device_type"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": []
+      },
+      {
+        "name": "devices",
+        "columns": [
+          {
+            "name": "id_devices",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_device_type",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "device_name",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_operational_system",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_provider",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "id_device_type",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_operational_system",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_provider",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_devices",
+              "id_operational_system"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": [
+          {
+            "name": "fk_devices_id_device_type",
+            "column": "id_device_type",
+            "references": {
+              "table": "cmdb.device_type",
+              "column": "id_device_type",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          },
+          {
+            "name": "fk_devices_id_operational_system",
+            "column": "id_operational_system",
+            "references": {
+              "table": "cmdb.operationalsystem_type",
+              "column": "id_operationalsystem_type",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          },
+          {
+            "name": "fk_devices_id_provider",
+            "column": "id_provider",
+            "references": {
+              "table": "cmdb.provider",
+              "column": "id_provider",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "dns_a_register",
+        "columns": [
+          {
+            "name": "id_dns_a_register",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR(256)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "comment",
+            "type": "TEXT",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_dns_a_register"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": []
+      },
+      {
+        "name": "ip_address",
+        "columns": [
+          {
+            "name": "id_ip_address",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_network_interface",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "ip_address_name",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "ip_address_type",
+            "type": "ENUM",
+            "constraints": []
+          },
+          {
+            "name": "ip_address_version",
+            "type": "ENUM",
+            "constraints": []
+          },
+          {
+            "name": "ip_address",
+            "type": "VARCHAR(50)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "id_network_interface",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "ip_address_type",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "ip_address_version",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "ip_address",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_ip_address"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "id_network_interface` ASC",
+              "ip_address_type` ASC",
+              "ip_address_version` ASC",
+              "ip_address` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_ip_address_id_network_interface",
+            "column": "id_network_interface",
+            "references": {
+              "table": "cmdb.network_interface",
+              "column": "id_network_interface",
+              "on_delete": "CASCADE",
+              "on_update": "CASCADE"
+            }
+          }
+        ]
+      },
+      {
+        "name": "network_interface",
+        "columns": [
+          {
+            "name": "id_network_interface",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "network_interface_name",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_devices",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "network_interface_name",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "network_interface_name",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_devices",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_devices",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_network_interface"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "network_interface_name` ASC"
+            ]
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "network_interface_name` ASC",
+              "id_devices` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_network_interface_id_devices",
+            "column": "id_devices",
+            "references": {
+              "table": "cmdb.devices",
+              "column": "id_devices",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "operationalsystem_type",
+        "columns": [
+          {
+            "name": "id_operationalsystem_type",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "description",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_operationalsystem_type"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": []
+      },
+      {
+        "name": "organization",
+        "columns": [
+          {
+            "name": "id_organization",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "organization_name",
+            "type": "VARCHAR(100)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_site",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "organization_name",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_site",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_organization"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "organization_name` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_organization_id_site",
+            "column": "id_site",
+            "references": {
+              "table": "location.sites",
+              "column": "id_sites",
+              "on_delete": "CASCADE",
+              "on_update": "CASCADE"
+            }
+          }
+        ]
+      },
+      {
+        "name": "provider",
+        "columns": [
+          {
+            "name": "id_provider",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "provider_name",
+            "type": "VARCHAR(100)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_site",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "provider_name",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_site",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_provider"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "provider_name` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_provider_id_site",
+            "column": "id_site",
+            "references": {
+              "table": "location.sites",
+              "column": "id_sites",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "services",
+        "columns": [
+          {
+            "name": "id_services",
+            "type": "INT(11)",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "services_name",
+            "type": "VARCHAR(100)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_customers",
+            "type": "INT(11)",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "id_application",
+            "type": "INT(11)",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "services_custom_data",
+            "type": "JSON",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "services_data",
+            "type": "JSON",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "services_name",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_customers",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_application",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_application",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_customers",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_services"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "services_name` ASC",
+              "id_customers` ASC",
+              "id_application` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_services_id_customers",
+            "column": "id_customers",
+            "references": {
+              "table": "cmdb.customers",
+              "column": "id_customers",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          },
+          {
+            "name": "fk_services_id_application",
+            "column": "id_application",
+            "references": {
+              "table": "cmdb.application",
+              "column": "id_application",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "test",
+        "columns": [
+          {
+            "name": "id_test",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR(45)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "description",
+            "type": "VARCHAR(200)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "action",
+            "type": "TEXT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "test_data",
+            "type": "TEXT",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "cron_data",
+            "type": "TEXT",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "test_wait_time",
+            "type": "INT(5)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_test"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": []
+      },
+      {
+        "name": "test_app_server",
+        "columns": [
+          {
+            "name": "id_test_app_server",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_test_title",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_server",
+            "type": "INT(11)",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "id_application",
+            "type": "INT(11)",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "id_test_title",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_server",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_application",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_test_title",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_server",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_application",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_test_app_server"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "id_test_title` ASC",
+              "id_server` ASC",
+              "id_application` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_test_app_server_id_test_title",
+            "column": "id_test_title",
+            "references": {
+              "table": "cmdb.test_title",
+              "column": "id_test_title",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          },
+          {
+            "name": "fk_test_app_server_id_server",
+            "column": "id_server",
+            "references": {
+              "table": "cmdb.devices",
+              "column": "id_devices",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          },
+          {
+            "name": "fk_test_app_server_id_application",
+            "column": "id_application",
+            "references": {
+              "table": "cmdb.application",
+              "column": "id_application",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "test_execution_control",
+        "columns": [
+          {
+            "name": "id_test_execution_control",
+            "type": "INT(11)",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_test",
+            "type": "INT(11)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "last_execution_time",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "nbr_execution_times",
+            "type": "INT",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "id_test",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_test_execution_control"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": [
+          {
+            "name": "fk_test_execution_control_id_test",
+            "column": "id_test",
+            "references": {
+              "table": "cmdb.test",
+              "column": "id_test",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "test_result",
+        "columns": [
+          {
+            "name": "id_test_result",
+            "type": "INT(11)",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_test_status",
+            "type": "INT(11)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_test",
+            "type": "INT(11)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "test_app",
+            "type": "INT(11)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "test_server",
+            "type": "INT(11)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "startedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "finishedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "duration",
+            "type": "DECIMAL(8,3)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "code",
+            "type": "INT(11)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "result",
+            "type": "TEXT(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "id_test_status",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_test_result"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": [
+          {
+            "name": "fk_test_result_id_test_status",
+            "column": "id_test_status",
+            "references": {
+              "table": "cmdb.test_status",
+              "column": "id_test_status",
+              "on_delete": "NO",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      },
+      {
+        "name": "test_status",
+        "columns": [
+          {
+            "name": "id_test_status",
+            "type": "INT(11)",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR(30)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "order_show",
+            "type": "INT(11)",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_test_status"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "name` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": []
+      },
+      {
+        "name": "test_title",
+        "columns": [
+          {
+            "name": "id_test_title",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "description",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_test_title"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": []
+      },
+      {
+        "name": "test_topic",
+        "columns": [
+          {
+            "name": "id_test_topic",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR(100)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "description",
+            "type": "VARCHAR(200)",
+            "constraints": [
+              "DEFAULT NULL"
+            ]
+          },
+          {
+            "name": "id_test_title",
+            "type": "INT(11)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "execution_order",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_test",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "test_order",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "id_test_title",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_test",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "execution_order",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "test_order",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_test_topic"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "execution_order` ASC",
+              "test_order` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_test_topic_id_test_title",
+            "column": "id_test_title",
+            "references": {
+              "table": "cmdb.test_title",
+              "column": "id_test_title",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          },
+          {
+            "name": "fk_test_topic_id_test",
+            "column": "id_test",
+            "references": {
+              "table": "cmdb.test",
+              "column": "id_test",
+              "on_delete": "NO ACTION",
+              "on_update": "NO ACTION"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "database": "location",
+    "tables": [
+      {
+        "name": "cities",
+        "columns": [
+          {
+            "name": "id_cities",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "city_name",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_states",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "city_name",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_states",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_states",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_cities"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "city_name` ASC",
+              "id_states` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_cities_id_states",
+            "column": "id_states",
+            "references": {
+              "table": "location.states",
+              "column": "id_states",
+              "on_delete": "CASCADE",
+              "on_update": "CASCADE"
+            }
+          }
+        ]
+      },
+      {
+        "name": "country",
+        "columns": [
+          {
+            "name": "id_country",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "country_name",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "country_abbreviation",
+            "type": "VARCHAR(5)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "country_name",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_country"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "country_name` ASC"
+            ]
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "country_name` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": []
+      },
+      {
+        "name": "sites",
+        "columns": [
+          {
+            "name": "id_sites",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "site_name",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_cities",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "id_cities",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_sites"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [],
+        "foreign_keys": [
+          {
+            "name": "fk_sites_id_cities",
+            "column": "id_cities",
+            "references": {
+              "table": "location.cities",
+              "column": "id_cities",
+              "on_delete": "CASCADE",
+              "on_update": "CASCADE"
+            }
+          }
+        ]
+      },
+      {
+        "name": "states",
+        "columns": [
+          {
+            "name": "id_states",
+            "type": "INT",
+            "constraints": [
+              "AUTO_INCREMENT",
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "state_name",
+            "type": "VARCHAR(255)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "state_abbreviation",
+            "type": "VARCHAR(5)",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "id_country",
+            "type": "INT",
+            "constraints": [
+              "NOT NULL"
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "DATETIME",
+            "constraints": [
+              "NOT NULL",
+              "DEFAULT CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "updatedAt",
+            "type": "DATETIME",
+            "constraints": [
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
+            ]
+          },
+          {
+            "name": "state_name",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_country",
+            "type": "ASC",
+            "constraints": []
+          },
+          {
+            "name": "id_country",
+            "type": "ASC",
+            "constraints": []
+          }
+        ],
+        "primary key": [
+          {
+            "type": "INDEX",
+            "columns": [
+              "id_states"
+            ]
+          }
+        ],
+        "indexes": [],
+        "unique": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": [
+              "state_name` ASC",
+              "id_country` ASC"
+            ]
+          }
+        ],
+        "foreign_keys": [
+          {
+            "name": "fk_states_id_country",
+            "column": "id_country",
+            "references": {
+              "table": "location.country",
+              "column": "id_country",
+              "on_delete": "CASCADE",
+              "on_update": "CASCADE"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
