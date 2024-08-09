@@ -33,12 +33,12 @@ from jinja2 import Template
 from os import path
 
 
-# Configuração do logging
 def configure_logging():
-    logging.basicConfig(level=logging.DEBUG)
-    logger = logging.getLogger(__name__)
-    return logger
-
+    if not logging.getLogger().hasHandlers():
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)s - %(levelname)s - %(threadName)s - %(funcName)s:%(lineno)d - %(name)s - %(message)s"
+        )
 
 views_template = """
 import logging
@@ -47,7 +47,7 @@ from flask_appbuilder import AppBuilder, expose, BaseView
 from .models import db, {{ tables | join(', ') }}
 
 # Configuração do logging
-logger = logging.getLogger(__name__)
+logging = logging.getLogger(__name__)
 
 def register_views(app: Flask):
     try:
@@ -65,28 +65,28 @@ def register_views(app: Flask):
         appbuilder.add_view({{ table }}View, "{{ table }}", icon="fa-folder-open-o", category="Admin")
         {% endfor %}
 
-        logger.info("Views registradas com sucesso.")
+        logging.info("Views registradas com sucesso.")
 
     except Exception as e:
-        logger.error("Erro ao registrar as views: %s", e)
+        logging.error("Erro ao registrar as views: %s", e)
         raise
 """
 
 
 def generate_views(db_structure: dict, project_folder: str) -> bool:
     try:
-        logger = configure_logging()
-        logger.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
-        logger.info("=== Parâmetros recebidos ===")
-        logger.info(f"==> VAR: db_structure    TYPE: {type(db_structure)}, CONTENT: {db_structure}")
-        logger.info(f"==> VAR: project_folder  TYPE: {type(project_folder)}, CONTENT: {project_folder}")
+        configure_logging()
+        logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
+        logging.info("=== Parâmetros recebidos ===")
+        logging.info(f"==> VAR: db_structure    TYPE: {type(db_structure)}, CONTENT: {db_structure}")
+        logging.info(f"==> VAR: project_folder  TYPE: {type(project_folder)}, CONTENT: {project_folder}")
         
         if not db_structure or len(db_structure) == 0:
-            logger.error("Parâmetro de entrada 'db_structure' não recebido ou incorreto.")
+            logging.error("Parâmetro de entrada 'db_structure' não recebido ou incorreto.")
             return False
         
         if not project_folder or len(project_folder) == 0:
-            logger.error("Parâmetro 'project_folder' não recebido.")
+            logging.error("Parâmetro 'project_folder' não recebido.")
             return False
         
         tables = [table['name'].capitalize() for table in db_structure[0]['tables']]
@@ -100,11 +100,11 @@ def generate_views(db_structure: dict, project_folder: str) -> bool:
         with open(views_path, 'w') as file:
             file.write(views_code)
         
-        logger.info("Arquivo views.py gerado com sucesso em %s", views_path)
+        logging.info("Arquivo views.py gerado com sucesso em %s", views_path)
         return True
     
     except Exception as e:
-        logger.error("Erro ao gerar views.py: %s", e)
+        logging.error("Erro ao gerar views.py: %s", e)
         return False
 
 if __name__ == "__main__":

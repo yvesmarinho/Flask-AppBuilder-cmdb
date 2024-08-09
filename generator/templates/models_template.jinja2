@@ -1,0 +1,46 @@
+# models.py
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, DECIMAL, Text, Index
+from sqlalchemy.orm import relationship
+from flask_appbuilder import Model
+
+{% for db in databases %}
+    {% for table in db.tables %}
+class {{ table.name | capitalize }}(Model):
+    __bind_key__ = '{{ db.database }}'  # Nome do banco de dados
+    __tablename__ = '{{ table.name }}'  # Nome da tabela
+
+    {% for column in table.columns %}
+    {{ column.name }} = Column({{ column.type }}{% if "NOT NULL" in column.constraints %}, nullable=False{% endif %}{% if "PRIMARY KEY" in column.constraints %}, primary_key=True{% endif %}{% if "AUTO_INCREMENT" in column.constraints %}, autoincrement=True{% endif %})
+    {% endfor %}
+
+    {% if table.foreign_keys %}
+    {% for fk in table.foreign_keys %}
+    {{ fk.column }} = Column(ForeignKey('{{ fk.references.table }}.{{ fk.references.column }}'){% if "on_delete" in fk.references %}, ondelete="{{ fk.references.on_delete }}"{% endif %}{% if "on_update" in fk.references %}, onupdate="{{ fk.references.on_update }}"{% endif %})
+    {% endfor %}
+    {% endif %}
+
+    {% if table.indexes %}
+    {% for idx in table.indexes %}
+    Index('{{ idx.name }}', {{ ", ".join(idx.columns) }})
+    {% endfor %}
+    {% endif %}
+
+    {% if table.unique %}
+    {% for unique in table.unique %}
+    Index('{{ unique.name }}', {{ ", ".join(unique.columns) }}, unique=True)
+    {% endfor %}
+    {% endif %}
+
+    def __repr__(self):
+        return f"<{{ table.name | capitalize }}({{ repr_column_names(table.columns) }})>"
+
+{% endfor %}
+{% endfor %}
+
+{% macro repr_column_names(columns) %}
+{% set parts = [] %}
+{% for column in columns %}
+    {% set parts = parts + [column.name] %}
+{% endfor %}
+{{ parts | join(', ') }}
+{% endmacro %}

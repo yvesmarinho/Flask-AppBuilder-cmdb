@@ -31,10 +31,6 @@ from os import path
 from modules.logging_config import configure_logging
 from modules.config_reader import load_config
 from modules.sql_parser import parse_sql_file
-from modules.model_creator import create_models
-# from modules.view_creator import create_views
-# from modules.form_creator import create_forms
-# from modules.controller_creator import create_controllers
 
 logging.info(f"=== Programa: {__name__} ===")
 
@@ -133,7 +129,8 @@ def main(app_name='vya_system_generator',
             raise Exception("Failed to generate JSON.")
 
         logging.info(f"==> VAR: db_structure TYPE: {type(db_structure)}, LEN: {len(db_structure)}")
-
+        return
+        
         logging.info("===> Enviando JSON para o gerador de modelos...")
         projetc_folder = config['project']['project_path']
         if not path.exists(projetc_folder):

@@ -201,4 +201,3 @@ if __name__ == '__main__':
     
     generator = ModelGenerator(json_data)
     models_code = generator.generate_models()
-    # print(models_code)

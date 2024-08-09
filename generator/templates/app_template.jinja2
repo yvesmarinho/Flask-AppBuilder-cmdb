@@ -1,0 +1,23 @@
+# app_template.jinja2
+
+from flask import Flask
+from flask_appbuilder import AppBuilder, SQLA
+from {{ config['db_type'] }} import {{ config['db_type'].capitalize() }}
+
+app = Flask(__name__)
+
+# Configuração do banco de dados
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"{{ config['db_type'] }}://{{ config['db_user'] }}:"
+    f"{{ config['db_password'] }}@{{ config['db_host'] }}:"
+    f"{{ config['db_port'] }}/{{ config['db_name'] }}"
+)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLA(app)
+appbuilder = AppBuilder(app, db.session)
+
+# Configurações adicionais podem ser adicionadas aqui
+
+if __name__ == "__main__":
+    app.run(host={{ config['HOST'] }}, port={{ config['PORT'] }}, debug={{ config['DEBUG'] }})
