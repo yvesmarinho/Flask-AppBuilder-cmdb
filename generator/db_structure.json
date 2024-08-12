@@ -110,7 +110,18 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "aplicacoes_ibfk_1",
+              "columns": [
+                "id_app_type` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [],
         "foreign_keys": [
           {
@@ -169,7 +180,8 @@
             "name": "updatedAt",
             "type": "DATETIME",
             "constraints": [
-              "DEFAULT NULL"
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
             ]
           },
           {
@@ -196,7 +208,28 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_customers_site",
+              "columns": [
+                "id_site` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_customers_organization_idx",
+              "columns": [
+                "id_organization` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -306,7 +339,38 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "idx_id_dns",
+              "columns": [
+                "id_dns` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "idx_id_device",
+              "columns": [
+                "id_device` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "idx_id_application",
+              "columns": [
+                "id_application` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [],
         "foreign_keys": [
           {
@@ -466,7 +530,38 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "device_deviceType_ibfk_1",
+              "columns": [
+                "id_device_type` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "operationalSystem_ibfk_2",
+              "columns": [
+                "id_operational_system` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "provider_ibfk_idx",
+              "columns": [
+                "id_provider` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [],
         "foreign_keys": [
           {
@@ -642,7 +737,21 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "idx_ip_address_version_type_network_interface",
+              "columns": [
+                "id_network_interface` ASC",
+                "ip_address_type` ASC",
+                "ip_address_version` ASC",
+                "ip_address` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -738,7 +847,29 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "idx_network_interface_name",
+              "columns": [
+                "network_interface_name` ASC",
+                "id_devices` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "networkInterface_devices_ibfk_idx",
+              "columns": [
+                "id_devices` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -852,7 +983,8 @@
             "name": "updatedAt",
             "type": "DATETIME",
             "constraints": [
-              "DEFAULT NULL"
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
             ]
           },
           {
@@ -874,7 +1006,18 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_organization_site",
+              "columns": [
+                "id_site` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -934,7 +1077,8 @@
             "name": "updatedAt",
             "type": "DATETIME",
             "constraints": [
-              "DEFAULT NULL"
+              "DEFAULT NULL",
+              "ON UPDATE CURRENT_TIMESTAMP"
             ]
           },
           {
@@ -956,7 +1100,18 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_provider_site",
+              "columns": [
+                "id_site` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -1075,7 +1230,40 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "idx_customersId_applicationId",
+              "columns": [
+                "services_name` ASC",
+                "id_customers` ASC",
+                "id_application` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_services_applicationId",
+              "columns": [
+                "id_application` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_services_customersId_idx",
+              "columns": [
+                "id_customers` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -1278,7 +1466,50 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "test_title_id_idx",
+              "columns": [
+                "id_test_title` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "server_id_idx",
+              "columns": [
+                "id_server` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "app_id_idx",
+              "columns": [
+                "id_application` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "un_test",
+              "columns": [
+                "id_test_title` ASC",
+                "id_server` ASC",
+                "id_application` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -1385,7 +1616,18 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "test_id_idx",
+              "columns": [
+                "id_test` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [],
         "foreign_keys": [
           {
@@ -1562,7 +1804,18 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "un_state_name",
+              "columns": [
+                "name` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -1717,7 +1970,39 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_test_title",
+              "columns": [
+                "id_test_title` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_test",
+              "columns": [
+                "id_test` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "order_execution_test",
+              "columns": [
+                "execution_order` ASC",
+                "test_order` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -1821,7 +2106,29 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "idx_city_name",
+              "columns": [
+                "city_name` ASC",
+                "id_states` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_id_states",
+              "columns": [
+                "id_states` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -1900,7 +2207,18 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "idx_country_name",
+              "columns": [
+                "country_name` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",
@@ -1974,7 +2292,18 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_id_cities",
+              "columns": [
+                "id_cities` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [],
         "foreign_keys": [
           {
@@ -2061,7 +2390,29 @@
             ]
           }
         ],
-        "indexes": [],
+        "indexes": [
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "idx_state_name",
+              "columns": [
+                "state_name` ASC",
+                "id_country` ASC"
+              ]
+            }
+          },
+          {
+            "name": "",
+            "type": "INDEX",
+            "columns": {
+              "name": "fk_id_country",
+              "columns": [
+                "id_country` ASC"
+              ]
+            }
+          }
+        ],
         "unique": [
           {
             "name": "",

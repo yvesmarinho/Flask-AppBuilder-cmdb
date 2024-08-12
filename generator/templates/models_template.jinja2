@@ -1,46 +1,22 @@
-# models.py
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, DECIMAL, Text, Index
-from sqlalchemy.orm import relationship
-from flask_appbuilder import Model
+class {{ table_name | capitalize }}(Model):
+    __bind_key__ = '{{ db_name }}'  # Nome do banco de dados
+    __tablename__ = '{{ table_name }}'  # Nome da tabela
 
-{% for db in databases %}
-    {% for table in db.tables %}
-class {{ table.name | capitalize }}(Model):
-    __bind_key__ = '{{ db.database }}'  # Nome do banco de dados
-    __tablename__ = '{{ table.name }}'  # Nome da tabela
-
-    {% for column in table.columns %}
-    {{ column.name }} = Column({{ column.type }}{% if "NOT NULL" in column.constraints %}, nullable=False{% endif %}{% if "PRIMARY KEY" in column.constraints %}, primary_key=True{% endif %}{% if "AUTO_INCREMENT" in column.constraints %}, autoincrement=True{% endif %})
+    {% for column in columns %}
+    {{ column }}
     {% endfor %}
 
-    {% if table.foreign_keys %}
-    {% for fk in table.foreign_keys %}
-    {{ fk.column }} = Column(ForeignKey('{{ fk.references.table }}.{{ fk.references.column }}'){% if "on_delete" in fk.references %}, ondelete="{{ fk.references.on_delete }}"{% endif %}{% if "on_update" in fk.references %}, onupdate="{{ fk.references.on_update }}"{% endif %})
+    {% for fk in foreign_keys %}
+    {{ fk }}
     {% endfor %}
-    {% endif %}
 
-    {% if table.indexes %}
-    {% for idx in table.indexes %}
-    Index('{{ idx.name }}', {{ ", ".join(idx.columns) }})
+    {% for index in indexes %}
+    {{ index }}
     {% endfor %}
-    {% endif %}
 
-    {% if table.unique %}
-    {% for unique in table.unique %}
-    Index('{{ unique.name }}', {{ ", ".join(unique.columns) }}, unique=True)
+    {% for unique in unique_indexes %}
+    {{ unique }}
     {% endfor %}
-    {% endif %}
 
     def __repr__(self):
-        return f"<{{ table.name | capitalize }}({{ repr_column_names(table.columns) }})>"
-
-{% endfor %}
-{% endfor %}
-
-{% macro repr_column_names(columns) %}
-{% set parts = [] %}
-{% for column in columns %}
-    {% set parts = parts + [column.name] %}
-{% endfor %}
-{{ parts | join(', ') }}
-{% endmacro %}
+        return "{{ repr_str }}"

@@ -193,27 +193,16 @@ def generate_model(db_name, table_data, output_path, templates_path):
         # Preparar as colunas
         columns = []
         repr_columns = []
-        id_column_processed = False  # Flag para controlar a primeira ocorrência de um campo começando com "id"
-
         for column in table_data['columns']:
-            # Verifica se o nome do campo começa com "id" e se ainda não foi processado
-            if not id_column_processed and column['name'].lower().startswith('id'):
-                column_def = f"{column['name']} = Column(Integer, nullable=False, primary_key=True, autoincrement=True)"
-                id_column_processed = True  # Marca que o campo "id" foi processado
-            elif column['name'].lower() == 'createdat':
-                column_def = f"{column['name']} = Column(DateTime, default=today_date_format())"
-            elif column['name'].lower() == 'updatedat':
-                column_def = f"{column['name']} = Column(DateTime, default=None, onupdate=today_date_format())"
-            else:
-                column_type = convert_sql_to_sqlalchemy_type(column['type'])
-                column_def = f"{column['name']} = Column({column_type}"
-                if "NOT NULL" in column['constraints']:
-                    column_def += ", nullable=False"
-                if "PRIMARY KEY" in column['constraints']:
-                    column_def += ", primary_key=True"
-                if "AUTO_INCREMENT" in column['constraints']:
-                    column_def += ", autoincrement=True"
-                column_def += ")"
+            column_type = convert_sql_to_sqlalchemy_type(column['type'])
+            column_def = f"{column['name']} = Column({column_type}"
+            if "NOT NULL" in column['constraints']:
+                column_def += ", nullable=False"
+            if "PRIMARY KEY" in column['constraints']:
+                column_def += ", primary_key=True"
+            if "AUTO_INCREMENT" in column['constraints']:
+                column_def += ", autoincrement=True"
+            column_def += ")"
             columns.append(column_def)
 
             repr_columns.append(f"{column['name']}={{ '{{' }} self.{column['name']} {{ '}}' }}")
@@ -224,18 +213,14 @@ def generate_model(db_name, table_data, output_path, templates_path):
         indexes = []
         if 'indexes' in table_data:
             for idx in table_data['indexes']:
-                # Extraindo apenas os nomes das colunas para os índices
-                columns_in_index = [col.split('`')[1].strip() for col in idx['columns']]
-                index_def = f"Index('{idx['name']}', {', '.join(columns_in_index)})"
+                index_def = f"Index('{idx['name']}', {', '.join(idx['columns'])})"
                 indexes.append(index_def)
 
         # Preparar os índices únicos
         unique_indexes = []
         if 'unique' in table_data:
             for unique in table_data['unique']:
-                # Extraindo apenas os nomes das colunas para os índices únicos
-                columns_in_unique = [col.split('`')[1].strip() for col in unique['columns']]
-                unique_def = f"Index('{unique['name']}', {', '.join(columns_in_unique)}, unique=True)"
+                unique_def = f"Index('{unique['name']}', {', '.join(unique['columns'])}, unique=True)"
                 unique_indexes.append(unique_def)
 
         # Preparar as chaves estrangeiras
@@ -331,18 +316,13 @@ def models_generator(path_config_ini, file_config_ini, json_file_name, json_file
             return False
         
         logging.info(f"==> Inicia a geração do models.py para cada tabela de cada banco de dados")
-        # Limpa o conteúdo anterior do arquivo models.py e adiciona o cabeçalho
+        # Limpa o conteúdo anterior do arquivo models.py
         with open(path.join(output_path, 'models.py'), 'w', encoding='utf-8') as file:
-            # Adiciona os imports necessários e a função today_date_format
+            # Adiciona os imports necessários
             file.write(
-                    "from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, DECIMAL, Text, Index, DateTime\n"
+                    "from sqlalchemy import Column, Integer, String, ForeignKey, Date, DECIMAL, Text, Index, DateTime, JSON, Enum\n"
                     "from sqlalchemy.orm import relationship\n"
-                    "from flask_appbuilder import Model\n"
-                    "import pendulum\n\n"
-                    "def today_date_format():\n"
-                    "    local_tz = pendulum.timezone('America/Sao_Paulo')\n"
-                    "    pendulum_object = pendulum.now(local_tz)\n"
-                    "    return pendulum_object.format('YYYY-MM-DD HH:mm:ss')\n\n"
+                    "from flask_appbuilder import Model\n\n"
             )
         
         # Itera sobre cada banco de dados e suas tabelas

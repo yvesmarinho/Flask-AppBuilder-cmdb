@@ -122,24 +122,21 @@ class SQLQueryAnalyzer:
             query = query.strip()
             if query.upper().startswith("CREATE TABLE"):
                 self._parse_create_query(query)
-    
+
     def _parse_create_query(self, query):
         logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
         table_info = {}
-        table_name_match = re.search(r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:`?(\w+)`?\.)?`?(\w+)`?", query,
-                                     re.IGNORECASE)
+        table_name_match = re.search(r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:`?(\w+)`?\.)?`?(\w+)`?", query, re.IGNORECASE)
         if table_name_match:
             table_info["schema"] = table_name_match.group(1) if table_name_match.group(1) else ""
             table_info["table"] = table_name_match.group(2)
-        
+
         columns = []
         primary_keys = []
         unique_keys = []
         foreign_keys = []
-        indexes = []
-        
-        # Capturar a definição das colunas
-        column_definitions = re.findall(r"`(\w+)`\s+([A-Z]+(?:\(\d+(?:,\d+)?\))?)\s*(.*?)(?:,|$)", query, re.IGNORECASE)
+
+        column_definitions = re.findall(r"`(\w+)`\s+([A-Z]+(?:\(\d+(?:,\d+)?\))?)(.*?)(?:,|$)", query, re.IGNORECASE)
         for col in column_definitions:
             column_name = col[0]
             column_type = col[1].strip()
@@ -156,57 +153,43 @@ class SQLQueryAnalyzer:
                 on_update_value = re.search(r"ON UPDATE\s+([\w()'`]+)", constraints_part, re.IGNORECASE).group(1)
                 constraints.append(f"ON UPDATE {on_update_value}")
             columns.append({
-                    "name"       : column_name,
-                    "type"       : column_type,
-                    "constraints": constraints
+                "name": column_name,
+                "type": column_type,
+                "constraints": constraints
             })
-        
-        # Capturar chaves primárias
+
         primary_key_match = re.search(r"PRIMARY KEY\s*\(([^)]+)\)", query, re.IGNORECASE)
         if primary_key_match:
             primary_keys = [col.strip().strip('`') for col in primary_key_match.group(1).split(',')]
-        
-        # Capturar chaves únicas
+
         unique_key_matches = re.findall(r"UNIQUE\s*(?:INDEX\s*`?\w*`?\s*)?\(([^)]+)\)", query, re.IGNORECASE)
         for unique_key in unique_key_matches:
             unique_keys.append([col.strip().strip('`') for col in unique_key.split(',')])
-        
-        # Capturar chaves estrangeiras
+
         foreign_key_matches = re.findall(
-                r"FOREIGN KEY\s*\(([^)]+)\)\s*REFERENCES\s*`?(\w+)`?\.`?(\w+)`?\s*\(([^)]+)\)\s*(ON DELETE\s+(\w+))?\s*(ON UPDATE\s+(\w+))?",
-                query, re.IGNORECASE)
+            r"FOREIGN KEY\s*\(([^)]+)\)\s*REFERENCES\s*`?(\w+)`?\.`?(\w+)`?\s*\(([^)]+)\)\s*(ON DELETE\s+(\w+))?\s*(ON UPDATE\s+(\w+))?",
+            query, re.IGNORECASE)
         for fk in foreign_key_matches:
             foreign_keys.append({
-                    "name"      : f"fk_{table_info['table']}_{fk[0].strip().strip('`')}",
-                    "column"    : fk[0].strip().strip('`'),
-                    "references": {
-                            "table"    : f"{fk[1]}.{fk[2]}",
-                            "column"   : fk[3].strip().strip('`'),
-                            "on_delete": fk[5] if fk[5] else "NO ACTION",
-                            "on_update": fk[7] if fk[7] else "NO ACTION"
-                    }
+                "name": f"fk_{table_info['table']}_{fk[0].strip().strip('`')}",
+                "column": fk[0].strip().strip('`'),
+                "references": {
+                    "table": f"{fk[1]}.{fk[2]}",
+                    "column": fk[3].strip().strip('`'),
+                    "on_delete": fk[5] if fk[5] else "NO ACTION",
+                    "on_update": fk[7] if fk[7] else "NO ACTION"
+                }
             })
-        
-        # Capturar índices
-        index_matches = re.findall(r"INDEX\s+`(\w+)`\s*\(([^)]+)\)\s*(?:ASC|DESC)?", query, re.IGNORECASE)
-        for idx in index_matches:
-            index_name = idx[0]
-            index_columns = [col.strip().strip('`') for col in idx[1].split(',')]
-            indexes.append({
-                    "name"   : index_name,
-                    "columns": index_columns
-            })
-        
+
         table_info["columns"] = columns
         table_info["primary_keys"] = primary_keys
         table_info["unique_keys"] = unique_keys
         table_info["foreign_keys"] = foreign_keys
-        table_info["indexes"] = indexes  # Adiciona os índices aqui
-        
+
         table_info["query"] = query  # Adiciona a query original ao table_info
-        
+
         self.parsed_data.append(table_info)
-    
+
     def get_parsed_data(self):
         logging.info("=== Função: %s ===" % (sys._getframe().f_code.co_name))
         return self.parsed_data
@@ -279,7 +262,7 @@ def parse_sql_file(file_path: str) -> list:
             databases[database_name]["tables"].append(table_info_extracted)
 
     database_list = [data for db, data in databases.items()]
-    # logging.info(f"==> VAR: database_list TYPE: {type(database_list)}, CONTENT: {database_list}")
+    logging.info(f"==> VAR: database_list TYPE: {type(database_list)}, CONTENT: {database_list}")
     return database_list
 
 
