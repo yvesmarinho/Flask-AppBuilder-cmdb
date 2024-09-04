@@ -33,23 +33,35 @@ from config_reader import load_config
 from os import path
 
 
+import logging
+
 def config_logging():
     """
-    Configura o logging para a aplicação.
-
-    :return: True se a configuração foi bem-sucedida.
+    Configura o logging para a aplicação, aplicando a configuração apenas se
+    ainda não houver uma configuração anterior.
+    Atualizado: 16/08/2024
+    :return: True se a configuração foi bem-sucedida ou já estava configurada.
     :rtype: bool
     """
-    logger = logging.getLogger()
-    if logger.hasHandlers():
-        logger.handlers.clear()
-    
-    logging.basicConfig(
+    try:
+        logger = logging.getLogger()
+
+        # Verifica se o logger já está configurado
+        if logger.hasHandlers():
+            logging.info("Configuração de logging já existente, mantendo a configuração atual.")
+            return True
+
+        # Aplica a configuração de logging
+        logging.basicConfig(
             level=logging.DEBUG,
             format="%(asctime)s - %(levelname)s - %(threadName)s - %(funcName)s:%(lineno)d - %(name)s - %(message)s"
-    )
-    logging.info(f"=== Função: {__name__} ===")
-    return True
+        )
+        logging.info(f"=== Função: {__name__} ===")
+        return True
+
+    except Exception as e:
+        logging.error(f"Erro ao configurar o logging: {e}")
+        return False
 
 
 def render_template(template_path, output_path, context):
